@@ -507,6 +507,39 @@ padding:14px 18px;min-width:220px;max-width:82vw;text-align:center;box-shadow:0 
 .click-loop-btn{width:100%;min-height:58px;border:0;border-radius:14px;background:#ffdb18;color:#241900;font-size:18px;font-weight:1000;box-shadow:0 5px 0 #9d7600}
 .click-loop-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #9d7600}
 .reward-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.reward-strip div{background:#10151a;border:1px solid #343c44;border-radius:9px;padding:7px;text-align:center;font-size:10px}.reward-strip b{display:block;font-size:16px;color:#ffe28a}
+
+/* === CHAPTER I CHILD-GUIDE YELLOW NEXT TARGET === */
+.ch1-guide-target{
+  position:relative!important;
+  z-index:20!important;
+  outline:5px solid #ffd400!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 4px #3b2e00,0 0 22px #ffd400cc!important;
+  animation:ch1GuidePulse 1.05s ease-in-out infinite!important;
+}
+.ch1-guide-target::after{
+  content:"👇 PICK THIS";
+  position:absolute;
+  left:50%;
+  top:-36px;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  background:#ffd400;
+  color:#241b00;
+  border:2px solid #4c3900;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:1000;
+  pointer-events:none;
+}
+@keyframes ch1GuidePulse{
+  0%,100%{filter:brightness(1);transform:scale(1)}
+  50%{filter:brightness(1.13);transform:scale(1.015)}
+}
+@media(prefers-reduced-motion:reduce){
+ .ch1-guide-target{animation:none!important}
+}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -2541,7 +2574,9 @@ function renderCG3(){
 
 function render(){
  level.textContent=s.level;rank.textContent=window.rank();coins.textContent=s.coins;xpbar.style.width=s.xp+'%';nextTextEl=document.getElementById('nextText');nextTextEl.textContent=nextText();let r=R();activeRecipe.textContent=r?r[1]:'None';renderStoveStage(r);renderOvenStage(r);renderIngredientSystem(r);renderRealStock(r);renderCascade(r);mechanicConsequences();renderCG3();
- stationGrid.innerHTML=STATIONS.map(st=>`<div class="card station"><h3>${({'Fridge':'🧊','Pantry':'🥫','Prep Counter':'🔪','Sink':'🚰','Stovetop':'🍳','Oven':'🔥','Mixer':'🥣','Plating Pass':'🍽️'})[st]} ${st}</h3>${st==='Oven'?`<div class="big">${Math.round(s.oven)}°F</div><div class="meter"><i style="width:${Math.min(100,s.oven/3.75)}%"></i></div>`:st==='Stovetop'?`<div class="big">${s.stove?'ON':'OFF'}</div><div class="meter"><i style="width:${s.stove?68:0}%"></i></div>`:'<p>Interactive kitchen station.</p>'}<button class="btn" onclick="stationAction('${st}')">Use ${st}</button></div>`).join('');
+ stationGrid.innerHTML=STATIONS.map(st=>`<div class="card station"><h3>${({'Fridge':'🧊','Pantry':'🥫','Prep Counter':'🔪','Sink':'🚰','Stovetop':'🍳','Oven':'🔥','Mixer':'🥣','Plating Pass':'🍽️'})[st]} ${st}</h3>${st==='Oven'?`<div class="big">${Math.round(s.oven)}°F</div><div class="meter"><i style="width:${Math.min(100,s.oven/3.75)}%"></i></div>`:st==='Stovetop'?`<div class="big">${s.stove?'ON':'OFF'}</div><div class="meter"><i style="width:${s.stove?68:0}%"></i></div>`:'<p>Interactive kitchen station.</p>'}${st==='Oven'
+?'<div class="btn" style="pointer-events:none;opacity:.82">🔥 OVEN AREA</div>'
+:`<button class="btn" onclick="stationAction('${st}')">Use ${st}</button>`}</div>`).join('');
  recipePanel.innerHTML=r?`<h3>${r[1]}</h3><p>${r[7]}</p><p>${Object.entries(r[5]).map(([k,v])=>ITEMS[k][1]+' '+ITEMS[k][0]+' ×'+v+' ['+workingQty(k)+' ready]').join(' • ')}</p>${r[6].map((x,i)=>`<div class="step ${i<s.step?'done':''}">${i<s.step?'✅':i===s.step?'👉':'○'} <div><b>${label(x)}</b>${i===s.step?'<div class="mini">CURRENT STEP</div>':''}</div></div>`).join('')}<button class="btn primary" onclick="doStep()">${label(r[6][s.step])}</button>`:`<p>No active dish. Pick a lesson or accept a customer ticket.</p><button class="btn primary" onclick="go('lessons')">Choose Lesson</button>`;
  foodState.innerHTML=[['🌡️ Temperature',Math.round(s.food.temp)+'°F'],['🥘 Doneness',s.food.doneness+'%'],['🔥 Browning',s.food.browning+'%'],['💧 Moisture',s.food.moisture+'%'],['🧂 Seasoning',s.food.seasoning+'%'],['🧼 Food Safety',s.food.safety+'%'],['🎨 Plating',s.plating+'%']].map(a=>`<div class="foodstate"><span>${a[0]}</span><strong>${a[1]}</strong></div>`).join('');
  lessonList.innerHTML=RECIPES.map(x=>`<div class="card recipe ${s.level<x[2]?'locked':''}"><h3>${x[1]}</h3><p>${x[7]}</p><p><b>${x[3]}</b> • Unlock Lv ${x[2]} • 🪙 ${x[4]}</p><div>${Object.entries(x[5]).map(([k,v])=>`<span class="pill">${ITEMS[k][1]} ${ITEMS[k][0]} ×${v}</span>`).join('')}</div><button class="btn ${s.level>=x[2]?'primary':''}" onclick="lessonStart('${x[0]}')">${s.level>=x[2]?(s.mastered.includes(x[0])?'Replay • Best '+(s.scores[x[0]]||0)+'%':'Start Lesson'):'Locked'}</button></div>`).join('');
@@ -2643,4 +2678,97 @@ setTimeout(()=>{
    }
  }catch(e){}
 },400);
+</script><script>
+/* === CHAPTER I CHILD GUIDE === */
+function ch1GuideActive(){
+ try{
+   if(!window.s)return true;
+   if((s.level||1)>1)return false;
+   if(s.ch1MovieDone)return false;
+   if(s.cg3Completed && Object.keys(s.cg3Completed).length>0)return false;
+   return true;
+ }catch(e){return true}
+}
+function clearCh1Guide(){
+ document.querySelectorAll('.ch1-guide-target').forEach(x=>x.classList.remove('ch1-guide-target'));
+}
+function visibleClickable(nodes){
+ return [...nodes].filter(el=>{
+   if(!el || el.disabled)return false;
+   let r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+   return r.width>8&&r.height>8&&cs.display!=='none'&&cs.visibility!=='hidden'&&cs.pointerEvents!=='none';
+ });
+}
+function findChapterOneNextTarget(){
+ if(!ch1GuideActive())return null;
+
+ // Prefer the game's explicit current/next controls first.
+ let preferred=[
+   '.cg3-next button',
+   '.easy-mainbtn',
+   '.beginner-mission .primary',
+   '.movie-action',
+   '.cg3-focus-stage .primary',
+   '.cg3-focus-stage button',
+   '#cg3HomeBody .cg3-start',
+   '#cg3CookBody .primary',
+   '#cg3PantryBody .primary'
+ ];
+ for(let sel of preferred){
+   let a=visibleClickable(document.querySelectorAll(sel));
+   if(a.length)return a[0];
+ }
+
+ // Then inspect button text for the obvious Chapter I action.
+ let buttons=visibleClickable(document.querySelectorAll('button'));
+ let good=buttons.find(b=>{
+   let t=(b.textContent||'').trim();
+   return /start lesson|start tutorial|continue|next|collect|get ingredients|prep|mix|heat|cook|plate|clean|go to|load|finish|do it/i.test(t)
+      && !/home|menu|help|show me|settings|options|reset|new game|academy|inventory/i.test(t);
+ });
+ return good||null;
+}
+function updateChapterOneGuide(scroll=false){
+ clearCh1Guide();
+ if(!ch1GuideActive())return;
+ let el=findChapterOneNextTarget();
+ if(!el)return;
+ el.classList.add('ch1-guide-target');
+ if(scroll){
+   let r=el.getBoundingClientRect();
+   if(r.top<70||r.bottom>innerHeight-60){
+     el.scrollIntoView({behavior:'smooth',block:'center'});
+   }
+ }
+}
+function scheduleChapterOneGuide(scroll=false){
+ clearTimeout(window.__ch1GuideTimer);
+ window.__ch1GuideTimer=setTimeout(()=>updateChapterOneGuide(scroll),100);
+}
+
+// Move the guide immediately after any action/reward.
+document.addEventListener('click',e=>{
+ if(!ch1GuideActive())return;
+ let b=e.target.closest('button');
+ if(!b)return;
+ setTimeout(()=>scheduleChapterOneGuide(false),140);
+},true);
+
+const ch1GuideObserver=new MutationObserver(()=>scheduleChapterOneGuide(false));
+setTimeout(()=>{
+ try{
+   ch1GuideObserver.observe(document.body,{childList:true,subtree:true});
+   updateChapterOneGuide(false);
+ }catch(e){}
+},120);
+
+// Hook reward popup so the target advances after reward feedback.
+if(typeof cgGrantReward==='function'){
+ const __cgGrantRewardOriginal=cgGrantReward;
+ cgGrantReward=function(...args){
+   let r=__cgGrantRewardOriginal.apply(this,args);
+   scheduleChapterOneGuide(false);
+   return r;
+ };
+}
 </script></body></html>
