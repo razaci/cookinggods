@@ -390,6 +390,52 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 .beginner-mission button{padding:10px;border-radius:10px;border:1px solid #668467;background:#17301b;color:#e7f6e9;font-weight:900}
 .beginner-mission button.primary{background:#ffdb18;color:#211500;border-color:#fff08d}
 .easy-badge{display:inline-block;background:#d9f2aa;color:#173016;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:1000}
+
+/* === ULTRA SIMPLE HIGH-FX MODE === */
+:root{--easyTap:64px}
+.cg3-shell{font-size:18px}
+.cg3-nav button{min-height:58px;font-size:16px;font-weight:1000}
+.cg3-card h2,.cg3-card h3{line-height:1.15}
+.cg3-card p{font-size:17px;line-height:1.4}
+.easy-focus{background:linear-gradient(180deg,#151b24,#090c11);border:3px solid #ffdb18;border-radius:20px;padding:14px;margin:10px 0;box-shadow:0 0 34px #ffdb1844}
+.easy-focus .eyebrow{font-size:12px;font-weight:1000;color:#ffe276;letter-spacing:.12em}
+.easy-focus .action{font-size:28px;font-weight:1000;line-height:1.1;margin:6px 0;color:#fff}
+.easy-focus .sub{font-size:17px;color:#c7d5e2;margin-bottom:10px}
+.easy-mainbtn{width:100%;min-height:var(--easyTap);border:none;border-radius:16px;background:linear-gradient(180deg,#ffe13d,#e6b900);color:#1d1600;font-size:22px;font-weight:1000;box-shadow:0 8px 0 #8a6a00,0 0 30px #ffdb1866;margin-top:8px}
+.easy-mainbtn:active{transform:translateY(5px);box-shadow:0 3px 0 #8a6a00}
+.easy-second{width:100%;min-height:54px;border-radius:14px;border:1px solid #60778a;background:#17222e;color:#ecf6ff;font-size:17px;font-weight:900;margin-top:8px}
+.easy-hide{display:none!important}
+.easy-meter{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.easy-meter div{background:#0c1117;border-radius:11px;padding:8px;text-align:center;font-size:11px}
+.easy-meter b{display:block;font-size:20px;color:#ffd878}
+.fx-flash{position:fixed;inset:0;pointer-events:none;z-index:10000;background:radial-gradient(circle at center,#fff8 0,#ffd73d55 20%,transparent 55%);animation:fxFlash .45s ease-out forwards}
+@keyframes fxFlash{to{opacity:0;transform:scale(1.2)}}
+.fx-burst{position:fixed;z-index:10030;font-size:44px;pointer-events:none;animation:fxBurst 1s ease-out forwards}
+@keyframes fxBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-110%) scale(1.5)}}
+@media(max-width:620px){
+ .cg3-shell{font-size:17px}
+ .cg3-nav{grid-template-columns:repeat(3,1fr)!important}
+ .cg3-nav button{font-size:13px;min-height:54px}
+ .easy-focus .action{font-size:24px}
+ .easy-meter{grid-template-columns:repeat(3,1fr)}
+}
+
+/* === OVEN LAB 4.0 === */
+.oven-lab{margin-top:10px;background:#0d1117;border:1px solid #5f7180;border-radius:16px;padding:11px}
+.oven-lab h4{margin:0 0 8px;color:#ffd58b}
+.oven-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.oven-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.oven-lab button{min-height:48px;border-radius:11px;border:1px solid #647688;background:#17222d;color:#eef6ff;font-weight:900}
+.oven-lab button.on{background:#ffdb18;color:#211500;border-color:#fff08e;box-shadow:0 0 18px #ffdb1855}
+.oven-effects{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.oven-effects div{background:#111821;border-radius:9px;padding:7px;text-align:center;font-size:10px}.oven-effects b{display:block;color:#ffca78;font-size:16px}
+.rack-view{position:relative;height:190px;border:2px solid #5b4632;border-radius:12px;background:radial-gradient(circle at 50% 45%,#9e3d123d,#110c09 70%);overflow:hidden;margin-top:9px}
+.rack-line{position:absolute;left:10%;right:10%;height:3px;background:#7f6b58;border-radius:3px}
+.rack-line.top{top:25%}.rack-line.mid{top:50%}.rack-line.low{top:75%}
+.rack-food{position:absolute;left:50%;transform:translateX(-50%);font-size:48px;filter:drop-shadow(0 5px 6px #000);transition:.25s}
+.rack-food.top{top:7%}.rack-food.mid{top:32%}.rack-food.low{top:57%}
+.heat-wave{position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 18px,#ff7a1814 20px 22px);animation:heatWave 1.3s linear infinite;pointer-events:none}
+@keyframes heatWave{to{transform:translateY(-22px)}}
+@media(max-width:620px){.oven-effects{grid-template-columns:repeat(2,1fr)}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -586,7 +632,7 @@ function renderKitchenBench(r){
  <div class="utility ${target==='prep'?'spatial-next':''}"><h4>🔪 Prep Counter</h4><div class="prep-board" onclick="chopPrep()">🥕 🧅 🍅<div class="chopline"><i style="width:${s.prepProgress}%"></i></div></div><button class="btn" onclick="chopPrep()">Tap to Chop / Prep</button></div>
  <div class="utility ${target==='sink'?'spatial-next':''}" id="sinkVisual"><h4>🚰 Sink</h4><div class="sink-basin" onclick="useSinkVisual()">💧</div><button class="btn" onclick="useSinkVisual()">Wash / Clean</button></div>
  <div class="utility"><h4>🧊 Fridge</h4><div class="fridge-shelves">${inv.map(k=>`<div class="food-icon" onclick="useFridgeIngredient('${k}')">${ITEMS[k][1]}<small>${ITEMS[k][0]} ×${s.inventory[k]}</small></div>`).join('')||'<small>Fridge empty</small>'}</div></div>
- </div>`;
+ ${renderOvenLab()}</div>`;
 }
 
 
@@ -827,7 +873,8 @@ function loadOvenItem(){
  ensureOven2();let r=R();if(!r)return toast('Start an oven recipe first.');
  if(!s.ovenDoor)return toast('Open the oven door first.');
  if(s.ovenItem)return toast('There is already something in the oven.');
- s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};s.trayInOven=true;s.cookLocation='oven';s.ovenCook=0;save();render();toast(r[1]+' placed in oven');
+ s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};s.trayInOven=true;s.cookLocation='oven';s.ovenCook=0;s.ovenDoneDing=false;s.ovenCrust=0;s.ovenTender=0;s.ovenAroma=0;if(s.beginnerMode){let p=ovenProfile();s.ovenSet=p.ideal;s.ovenMode=p.type==='ROAST'?'ROAST':'BAKE';s.ovenRack='mid';s.ovenCookware=/bread|cake|pie/i.test(r[1])?'dish':/chicken|fish/i.test(r[1])?'sheet':'sheet';}
+ save();render();toast(r[1]+' placed in oven');
 }
 function removeOvenItem(){
  ensureOven2();if(!s.ovenDoor)return toast('Open the oven door first.');
@@ -835,16 +882,19 @@ function removeOvenItem(){
  let name=s.ovenItem.name;s.ovenItem=null;s.trayInOven=false;s.cookLocation='stove';save();render();toast(name+' removed from oven');
 }
 function ovenTick(){
- ensureOven2();
+ ensureOven2();ensureOvenLab();
  if(s.ovenPower){
-   let dir=s.oven<s.ovenSet?1:-1;
-   if(Math.abs(s.oven-s.ovenSet)>2)s.oven+=dir*Math.min(12,Math.abs(s.ovenSet-s.oven));
-   if(s.ovenItem&&s.ovenDoor===false&&Math.abs(s.oven-s.ovenSet)<25){
-      s.ovenCook=Math.min(100,s.ovenCook+4);
-      s.food.doneness=Math.min(100,(s.food.doneness||0)+3);
-      s.food.browning=Math.min(100,(s.food.browning||0)+2);
-      if(s.ovenCook===100){ovenDing();chefSay('That oven dish looks ready! Open the door and remove it.')}
+   let target=s.ovenSet;
+   if(s.ovenMode==='BROIL')target=Math.max(target,475);
+   if(s.ovenMode==='KEEP WARM')target=Math.min(target,200);
+   if(!s.ovenDoor){
+     let dir=s.oven<target?1:-1;
+     if(Math.abs(s.oven-target)>2)s.oven+=dir*Math.min(s.ovenFan?16:12,Math.abs(target-s.oven));
+   } else {
+     s.oven=Math.max(72,s.oven-35);
    }
+   applyOvenPhysics();
+   if(s.ovenItem&&s.ovenCook>=100&&!s.ovenDoneDing){s.ovenDoneDing=true;ovenDing();chefSay('Oven dish ready! Open the door and remove it.');easyFX('🔔')}
  }
 }
 
@@ -1383,13 +1433,13 @@ function cg3Cook(){
  else if(station==='sink')focus=document.getElementById('sinkGame')?sinkGame.innerHTML:'';
  else if(station==='prep')focus=`<div class="cg3-card"><h3>🔪 Prep Counter</h3><p>Prepare the highlighted ingredients for ${r[1]}.</p>${Object.entries(r[5]).map(([k,v])=>`<button class="btn" onclick="prepIngredient('${k}')">${ITEMS[k][1]} PREP ${ITEMS[k][0]}</button>`).join('')}</div>`;
  else focus=`<div class="cg3-card"><h3>🍽️ Plating</h3><p>Finish the dish, check seasoning, and make the plate look intentional.</p><button class="btn primary" onclick="s.food.plating=Math.min(100,(s.food.plating||0)+20);rewardAction('plate_'+Math.floor(s.food.plating/20),'Plating improved',s.upgrades.plate1?5:3,1,'Hospita',1);render()">IMPROVE PLATING</button></div>`;
- cg3CookBody.innerHTML=`${cg3OperationHeader()}${renderBeginnerMission()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
+ cg3CookBody.innerHTML=`${ultraSimplePanel()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
  <div class="cg3-focus-stage"><h2>${stationNames[station]||'COOKING STATION'}</h2>${focus}</div>
  <div class="cg3-station-grid">${stationBtns}</div>`;
 }
 function cg3Pantry(){
  let r=R(),req=r?r[5]:{};
- cg3PantryBody.innerHTML=`${cg3Hud()}<div class="cg3-card"><h2>🌾 Ingredient Sources</h2><p>Food begins at its source. Collect or make what the recipe needs, then move it through storage and into the kitchen.</p>${renderSourceGame(r)}</div><div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>After producing ingredients, store them here and pull only what the recipe needs.</p>
+ cg3PantryBody.innerHTML=`${cg3Hud()}<div class="cg3-card"><h2>🌾 Ingredient Sources</h2><p>Press one button and the game collects, makes, and stages anything currently available.</p><button class="easy-mainbtn" onclick="easySourceForRecipe()">GET WHAT I NEED</button>${renderSourceGame(r)}</div><div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>After producing ingredients, store them here and pull only what the recipe needs.</p>
  ${r?`<div class="cg3-next">Recipe: ${r[1]} • ${Object.entries(req).map(([k,v])=>ITEMS[k][0]+' ×'+v).join(' • ')}<button onclick="pullRecipeIngredients()">GET ALL NEEDED INGREDIENTS</button></div>`:''}
  ${document.getElementById('realStorageBrowser')?realStorageBrowser.innerHTML:''}
  ${document.getElementById('shoppingNeeds')?shoppingNeeds.innerHTML:''}
@@ -1397,7 +1447,7 @@ function cg3Pantry(){
 }
 function cg3Academy(){
  cg3AcademyBody.innerHTML=`<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
- ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]} • ${masteryRank(s.recipeMastery[ix]||0)}</button>`).join('')}</div>`).join('')}</div>
+ ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" style="min-height:54px;font-size:16px" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]} • ${masteryRank(s.recipeMastery[ix]||0)}</button>`).join('')}</div>`).join('')}</div>
  <div class="cg3-card"><h2>🔥 Divine Favor</h2>${Object.entries(s.godFavor).map(([k,v])=>`<p>${k} <b>${v}/100</b></p><div class="mastery-track"><i style="width:${Math.min(100,v)}%"></i></div>`).join('')}</div>
  <div class="cg3-card"><h2>🌾 Kitchen Sources</h2><p>Invest rewards into the things that produce your ingredients: chickens, gardens, livestock, orchards and grain plots.</p>${renderSourceGame(R())}</div><div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
  ${s.chests?`<div class="temple-chest"><h2>🎁 Temple Chest ×${s.chests}</h2><button class="cg3-start" onclick="openTempleChest()">OPEN REWARD CHEST</button></div>`:''}</div>`;
@@ -1723,6 +1773,129 @@ function renderBeginnerMission(){
  return `<div class="beginner-mission"><span class="easy-badge">BEGINNER MODE</span><h3>One thing at a time</h3><div class="bigstep">${x[0]}</div><div class="why">${x[1]}</div><div class="assist"><button class="primary" onclick="beginnerAutoAction()">HELP ME DO THIS</button><button onclick="cg3Help()">SHOW ME WHERE</button></div></div>`;
 }
 
+
+function easyFX(icon='✨'){
+ let f=document.createElement('div');f.className='fx-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),500);
+ let b=document.createElement('div');b.className='fx-burst';b.textContent=icon;b.style.left='50%';b.style.top='48%';document.body.appendChild(b);setTimeout(()=>b.remove(),1050);
+ try{beep(660,.06);setTimeout(()=>beep(880,.08),70)}catch(e){}
+}
+function easyActionLabel(){
+ let p=cg3Phase()[0];
+ if(p==='GET')return['GET INGREDIENTS','The game will collect what you already have.'];
+ if(p==='PREP')return['PREP FOOD','One tap prepares everything for this recipe.'];
+ if(p==='MIX')return['MIX IT','One tap handles an easy mix.'];
+ if(p==='COOK')return[cg3StationForCurrent()==='oven'?'COOK IN OVEN':'COOK ON STOVE','The game sets safe beginner heat automatically.'];
+ if(p==='PLATE')return['PLATE IT','One tap makes a clean plate.'];
+ return['CLEAN UP','One tap resets the station.'];
+}
+function ultraEasyAction(){
+ easyFX(cg3Phase()[0]==='COOK'?'🔥':'✨');
+ beginnerAutoAction();
+}
+function ultraSimplePanel(){
+ ensureBeginnerMode();let r=R();let a=easyActionLabel();
+ return `<div class="easy-focus">
+   <div class="eyebrow">CURRENT MISSION</div>
+   <div class="action">${a[0]}</div>
+   <div class="sub">${a[1]}</div>
+   <div class="easy-meter">
+    <div><b>${r?Math.min((s.cg3Phase||0)+1,6):0}/6</b>STEP</div>
+    <div><b>${s.coins||0}</b>COINS</div>
+    <div><b>${s.rewardStreak||0}</b>STREAK</div>
+   </div>
+   <button class="easy-mainbtn" onclick="ultraEasyAction()">DO IT</button>
+   <button class="easy-second" onclick="cg3Help()">SHOW ME</button>
+ </div>`;
+}
+
+
+function easySourceForRecipe(){
+ let r=R();if(!r)return toast('Choose a recipe first.');
+ ensureSources();
+ let needs=sourceNeedList(r);
+ for(const x of needs){
+   if(x.have>=x.n)continue;
+   if(x.source==='craft'){
+     let c=CRAFTS[x.k];let ok=Object.entries(c.from).every(([k,n])=>storageQty(k)+workingQty(k)>=n);
+     if(ok)craftIngredient(x.k);
+   }else if(x.source!=='market'){
+     if(s.sources[x.source]&&s.sourceReady[x.source])harvestSource(x.source);
+   }
+ }
+ pullRecipeIngredients();easyFX('🌾');render();
+}
+
+
+const OVEN_COOKWARE={
+ sheet:{name:'Sheet Pan',icon:'▰',brown:1.25,moisture:1.15,speed:1.05,desc:'More browning, a little drier.'},
+ dish:{name:'Baking Dish',icon:'▣',brown:.8,moisture:.72,speed:.95,desc:'Gentler browning, holds moisture.'},
+ dutch:{name:'Dutch Oven',icon:'🥘',brown:.55,moisture:.4,speed:.9,desc:'Very moist, slow, tender cooking.'},
+ stone:{name:'Baking Stone',icon:'🪨',brown:1.5,moisture:1.05,speed:1.08,desc:'Strong bottom heat and crisping.'}
+};
+function ensureOvenLab(){
+ if(!s.ovenRack)s.ovenRack='mid';
+ if(!s.ovenCookware)s.ovenCookware='sheet';
+ if(s.ovenFan==null)s.ovenFan=false;
+ if(s.ovenSteam==null)s.ovenSteam=false;
+ if(s.ovenCrust==null)s.ovenCrust=0;
+ if(s.ovenTender==null)s.ovenTender=0;
+ if(s.ovenAroma==null)s.ovenAroma=0;
+ if(s.ovenLastTemp==null)s.ovenLastTemp=s.oven||72;
+}
+ensureOvenLab();
+function setOvenRack(x){ensureOvenLab();s.ovenRack=x;easyFX('♨️');save();render()}
+function setOvenCookware(x){ensureOvenLab();s.ovenCookware=x;easyFX(OVEN_COOKWARE[x].icon);save();render()}
+function toggleOvenFan(){ensureOvenLab();s.ovenFan=!s.ovenFan;easyFX('🌀');save();render()}
+function toggleOvenSteam(){ensureOvenLab();s.ovenSteam=!s.ovenSteam;easyFX('💨');save();render()}
+function ovenProfile(){
+ ensureOvenLab();let r=R(),name=(r?r[1]:'').toLowerCase();
+ if(/bread|cake|pie/.test(name))return{type:'BAKE',ideal:350,moist:1,brown:1};
+ if(/chicken|fish/.test(name))return{type:'ROAST',ideal:400,moist:.8,brown:1.2};
+ if(/toast/.test(name))return{type:'CRISP',ideal:425,moist:1.2,brown:1.5};
+ return{type:'GENERAL',ideal:375,moist:1,brown:1};
+}
+function ovenEnvironment(){
+ ensureOvenLab();
+ let cw=OVEN_COOKWARE[s.ovenCookware],p=ovenProfile();
+ let rackBrown=s.ovenRack==='top'?1.35:s.ovenRack==='low'?.9:1;
+ let rackSpeed=s.ovenRack==='mid'?1.08:1;
+ let modeBrown=s.ovenMode==='BROIL'?1.8:s.ovenMode==='ROAST'?1.25:s.ovenMode==='KEEP WARM'?.25:1;
+ let fan=s.ovenFan?1.18:1, steam=s.ovenSteam?.55:1;
+ return {cw,p,rackBrown,rackSpeed,modeBrown,fan,steam};
+}
+function renderOvenLab(){
+ ensureOvenLab();let e=ovenEnvironment(),food=s.ovenItem?s.ovenItem.emoji:'⬜';
+ return `<div class="oven-lab"><h4>🔥 ADVANCED OVEN</h4>
+ <div class="oven-grid3">${['top','mid','low'].map(x=>`<button class="${s.ovenRack===x?'on':''}" onclick="setOvenRack('${x}')">${x==='top'?'TOP RACK':x==='mid'?'MIDDLE RACK':'LOW RACK'}</button>`).join('')}</div>
+ <div class="oven-grid2" style="margin-top:7px">${Object.entries(OVEN_COOKWARE).map(([k,v])=>`<button class="${s.ovenCookware===k?'on':''}" onclick="setOvenCookware('${k}')">${v.icon} ${v.name}</button>`).join('')}</div>
+ <div class="oven-grid2" style="margin-top:7px"><button class="${s.ovenFan?'on':''}" onclick="toggleOvenFan()">🌀 CONVECTION ${s.ovenFan?'ON':'OFF'}</button><button class="${s.ovenSteam?'on':''}" onclick="toggleOvenSteam()">💨 STEAM ${s.ovenSteam?'ON':'OFF'}</button></div>
+ <div class="rack-view"><div class="heat-wave"></div><div class="rack-line top"></div><div class="rack-line mid"></div><div class="rack-line low"></div>${s.ovenItem?`<div class="rack-food ${s.ovenRack}">${food}</div>`:''}</div>
+ <div class="oven-effects"><div><b>${Math.round(s.ovenCrust)}</b>CRUST</div><div><b>${Math.round(s.ovenTender)}</b>TENDER</div><div><b>${Math.round(s.food.moisture||0)}</b>MOISTURE</div><div><b>${Math.round(s.ovenAroma)}</b>AROMA</div></div>
+ <p><small>${OVEN_COOKWARE[s.ovenCookware].desc} ${s.ovenRack==='top'?'Top rack browns faster.':s.ovenRack==='low'?'Low rack gives gentler top browning.':'Middle rack cooks most evenly.'} ${s.ovenFan?'Convection speeds cooking and browning.':''} ${s.ovenSteam?'Steam protects moisture and tenderness.':''}</small></p></div>`;
+}
+function applyOvenPhysics(){
+ ensureOvenLab();if(!s.ovenPower)return;
+ let e=ovenEnvironment();
+ if(s.ovenDoor){
+   s.oven=Math.max(72,s.oven-28);
+   return;
+ }
+ if(!s.ovenItem)return;
+ let temp=Math.max(0,s.oven-180)/220;
+ let speed=Math.max(.15,temp)*e.cw.speed*e.rackSpeed*e.fan;
+ if(s.ovenMode==='KEEP WARM')speed*=.18;
+ s.ovenCook=Math.min(100,s.ovenCook+1.55*speed);
+ s.food.doneness=Math.min(100,(s.food.doneness||0)+1.15*speed);
+ let browning=.9*temp*e.cw.brown*e.rackBrown*e.modeBrown*(s.ovenFan?1.12:1);
+ s.food.browning=Math.min(100,(s.food.browning||0)+browning);
+ s.ovenCrust=Math.min(100,s.ovenCrust+browning*(s.ovenSteam?.45:1));
+ let moistureLoss=.42*temp*e.cw.moisture*(s.ovenFan?1.18:1)*(s.ovenSteam?.28:1);
+ s.food.moisture=Math.max(0,(s.food.moisture==null?100:s.food.moisture)-moistureLoss);
+ s.ovenTender=Math.min(100,s.ovenTender+.55*speed*(s.ovenSteam?1.7:e.cw===OVEN_COOKWARE.dutch?1.5:1));
+ s.ovenAroma=Math.min(100,s.ovenAroma+.65*speed);
+ if(s.ovenMode==='BROIL'&&s.ovenRack==='top')s.ovenCrust=Math.min(100,s.ovenCrust+1.8);
+}
+
 function renderCG3(){
  ensureCG3();
  ['home','cook','pantry','academy'].forEach(x=>{
@@ -1730,7 +1903,15 @@ function renderCG3(){
    let nav=document.getElementById('cg3Nav'+x[0].toUpperCase()+x.slice(1));if(nav)nav.classList.toggle('active',s.cg3Screen===x);
  });
  cg3Home();cg3Cook();cg3Pantry();cg3Academy();
- setTimeout(()=>cg3PointToNext(false),60);
+ setTimeout(()=>{
+   cg3PointToNext(false);
+   if(s.beginnerMode&&s.cg3Screen==='cook'){
+     document.querySelectorAll('#cg3CookBody .cg3-card').forEach((el,i)=>{if(i>0)el.classList.add('easy-hide')});
+     document.querySelectorAll('#cg3CookBody button').forEach(btn=>{
+       if(!btn.classList.contains('easy-mainbtn')&&!btn.classList.contains('easy-second')&&!btn.closest('.easy-focus')) btn.classList.add('easy-hide');
+     });
+   }
+ },60);
 }
 
 function render(){
