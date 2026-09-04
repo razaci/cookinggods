@@ -13,7 +13,7 @@
 .ticket{border-left:4px solid #ffda26}.mini{font-size:12px;color:#bda071}.pill{padding:4px 8px;border:1px solid #6b4720;border-radius:999px;font-size:12px;display:inline-block;margin:2px 3px 2px 0}.foodstate{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0}.foodstate strong{color:#ffe16c}.quality{font-size:26px;font-weight:950;color:#ffd85f}
 nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#17100be8;backdrop-filter:blur(8px);border-top:1px solid #6c4924;display:grid;grid-template-columns:repeat(6,1fr)}nav button{border:0;background:transparent;color:#c6aa80;padding:9px 1px 11px;font-size:10px}nav button span{display:block;font-size:21px}nav button.active{color:#ffe169;background:#5c3b171f}
 #toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:#fff0bf;color:#251a09;padding:12px 15px;border-radius:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;font-weight:900;max-width:90vw;text-align:center}#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(min-width:760px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:760px){.grid{grid-template-columns:repeat(5,1fr)}}
 
 /* --- Interactive kitchen bench overhaul --- */
 .kitchen-bench{background:linear-gradient(180deg,#3a2614,#1d130b);border:1px solid #7c5728;border-radius:22px;padding:12px;box-shadow:inset 0 1px #fff1,0 15px 35px #0007;margin-bottom:12px}
@@ -347,13 +347,20 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 }
 
 #cg3~header,#cg3~.cosmic-hero,#cg3~main,#cg3~nav{display:none!important}
+
+/* --- GUIDED NEXT-ACTION POINTER --- */
+.cg3-target{outline:4px solid #ffdb18!important;box-shadow:0 0 0 4px #ffdb1830,0 0 32px #ffdb1875!important;animation:cg3Pulse 1.05s ease-in-out infinite}
+.cg3-target::after{content:"NEXT";position:absolute;right:8px;top:8px;background:#ffdb18;color:#211600;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:1000;z-index:30}
+.cg3-pointer{position:fixed;z-index:9999;pointer-events:none;font-size:46px;filter:drop-shadow(0 4px 6px #000);animation:cg3Bounce .65s ease-in-out infinite alternate}
+@keyframes cg3Pulse{50%{box-shadow:0 0 0 8px #ffdb1818,0 0 44px #ffdb18aa}}
+@keyframes cg3Bounce{to{transform:translateY(8px)}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
     <button id="cg3NavHome" onclick="cg3Go('home')">🏠 HOME</button>
     <button id="cg3NavCook" onclick="cg3Go('cook')">🍳 COOK</button>
     <button id="cg3NavPantry" onclick="cg3Go('pantry')">🧊 PANTRY</button>
-    <button id="cg3NavAcademy" onclick="cg3Go('academy')">📘 ACADEMY</button>
+    <button id="cg3NavAcademy" onclick="cg3Go('academy')">📘 ACADEMY</button><button onclick="cg3Help()" style="background:#ffdb18;color:#211500;border-color:#fff08a">❓ HELP</button>
   </div>
   <section id="cg3Home" class="cg3-screen">
     <div class="cg3-hero">
@@ -1341,7 +1348,7 @@ function cg3Cook(){
  else if(station==='sink')focus=document.getElementById('sinkGame')?sinkGame.innerHTML:'';
  else if(station==='prep')focus=`<div class="cg3-card"><h3>🔪 Prep Counter</h3><p>Prepare the highlighted ingredients for ${r[1]}.</p>${Object.entries(r[5]).map(([k,v])=>`<button class="btn" onclick="prepIngredient('${k}')">${ITEMS[k][1]} PREP ${ITEMS[k][0]}</button>`).join('')}</div>`;
  else focus=`<div class="cg3-card"><h3>🍽️ Plating</h3><p>Finish the dish, check seasoning, and make the plate look intentional.</p><button class="btn primary" onclick="s.food.plating=Math.min(100,(s.food.plating||0)+20);render()">IMPROVE PLATING</button></div>`;
- cg3CookBody.innerHTML=`<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next">${nxt[0]}<button onclick="cg3DoNext()">${nxt[1]}</button></div></div>
+ cg3CookBody.innerHTML=`<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
  <div class="cg3-focus-stage"><h2>${stationNames[station]||'COOKING STATION'}</h2>${focus}</div>
  <div class="cg3-station-grid">${stationBtns}</div>`;
 }
@@ -1357,6 +1364,49 @@ function cg3Academy(){
  cg3AcademyBody.innerHTML=`<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
  ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]}</button>`).join('')}</div>`).join('')}</div></div>`;
 }
+
+function cg3ClearTarget(){
+ document.querySelectorAll('.cg3-target').forEach(e=>e.classList.remove('cg3-target'));
+ let p=document.getElementById('cg3Pointer');if(p)p.remove();
+}
+function cg3TargetSelector(){
+ let phase=cg3Phase()[0],station=s.cg3Station==='auto'?cg3StationForCurrent():s.cg3Station;
+ if(s.cg3Screen==='home')return '.cg3-start';
+ if(s.cg3Screen==='pantry')return '.cg3-next button';
+ if(s.cg3Screen==='academy')return '.cg3-chapter.active .btn:not([disabled])';
+ if(phase==='GET')return '.cg3-next button';
+ if(phase==='PREP')return station==='prep'?'.cg3-focus-stage .btn':'.cg3-next button';
+ if(phase==='MIX')return station==='mixer'?'.cg3-focus-stage .primary,.cg3-focus-stage button[onclick*="pulseMixer"]':'.cg3-next button';
+ if(phase==='COOK'){
+   if(station==='oven')return '.cg3-focus-stage .primary,.cg3-focus-stage button[onclick*="toggleOvenPower"]';
+   if(station==='stove')return '.cg3-focus-stage button[onclick*="cycleBurner"],.cg3-focus-stage .primary';
+   return '.cg3-next button';
+ }
+ if(phase==='PLATE')return station==='plate'?'.cg3-focus-stage .primary':'.cg3-next button';
+ if(phase==='CLEAN')return station==='sink'?'.cg3-focus-stage button[onclick*="toggleSinkWater"],.cg3-focus-stage .primary':'.cg3-next button';
+ return '.cg3-next button';
+}
+function cg3PointToNext(scroll=true){
+ cg3ClearTarget();
+ let selector=cg3TargetSelector(),el=null;
+ try{el=document.querySelector(selector)}catch(e){}
+ if(!el){el=document.querySelector('.cg3-next button')}
+ if(!el)return;
+ el.classList.add('cg3-target');
+ if(getComputedStyle(el).position==='static')el.style.position='relative';
+ if(scroll)el.scrollIntoView({behavior:'smooth',block:'center'});
+ setTimeout(()=>{
+   let r=el.getBoundingClientRect(),p=document.createElement('div');p.id='cg3Pointer';p.className='cg3-pointer';p.textContent='👇';
+   p.style.left=Math.max(8,Math.min(window.innerWidth-60,r.left+r.width/2-22))+'px';
+   p.style.top=Math.max(8,Math.min(window.innerHeight-60,r.top-52))+'px';
+   document.body.appendChild(p);
+ },scroll?420:30);
+}
+function cg3Help(){
+ cg3PointToNext(true);
+ let nxt=cg3NextText();toast(nxt[0]);
+}
+
 function renderCG3(){
  ensureCG3();
  ['home','cook','pantry','academy'].forEach(x=>{
@@ -1364,6 +1414,7 @@ function renderCG3(){
    let nav=document.getElementById('cg3Nav'+x[0].toUpperCase()+x.slice(1));if(nav)nav.classList.toggle('active',s.cg3Screen===x);
  });
  cg3Home();cg3Cook();cg3Pantry();cg3Academy();
+ setTimeout(()=>cg3PointToNext(false),60);
 }
 
 function render(){
