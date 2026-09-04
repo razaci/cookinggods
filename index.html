@@ -364,6 +364,14 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 .result-overlay{position:fixed;z-index:10050;inset:0;background:#030508ee;display:grid;place-items:center;padding:12px}.result-card{width:min(620px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#172131,#090c12);border:2px solid #d9a43b;border-radius:22px;padding:18px;box-shadow:0 0 70px #d9a43b55}.result-card h1{text-align:center;color:#ffe49a;font-size:34px}.result-stars{text-align:center;font-size:42px;letter-spacing:8px}.score-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.score-grid div{background:#0c1219;border-radius:10px;padding:9px}.reward-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.reward-grid div{background:#141d28;border:1px solid #536b80;border-radius:11px;padding:9px;text-align:center}.mastery-track{height:12px;background:#15100b;border-radius:99px;overflow:hidden}.mastery-track i{display:block;height:100%;background:linear-gradient(90deg,#6bcf74,#ffdb18,#e99431)}
 .temple-chest{border:2px solid #a96ef1;background:#241437;border-radius:15px;padding:12px;text-align:center;margin-top:10px}.shop-upgrades{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.upgrade-card{background:#121923;border:1px solid #536a7e;border-radius:13px;padding:10px}.upgrade-card.owned{border-color:#4e9b64;background:#102018}
 @media(max-width:620px){.clean-hud{grid-template-columns:repeat(3,1fr)}.reward-grid{grid-template-columns:repeat(2,1fr)}.shop-upgrades{grid-template-columns:1fr}}
+
+/* === SOURCE-TO-KITCHEN GAMEPLAY === */
+.source-board{background:linear-gradient(180deg,#1d2619,#0c100c);border:2px solid #55753d;border-radius:18px;padding:12px;margin:10px 0}
+.source-chain{display:flex;gap:7px;align-items:center;overflow:auto;padding:4px 0}.source-node{min-width:135px;background:#111812;border:1px solid #4d6842;border-radius:12px;padding:9px;text-align:center}.source-node b{display:block;color:#e5dc92}.source-arrow{font-size:24px;color:#ffda37}
+.source-market{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.source-card{background:#111820;border:1px solid #52697b;border-radius:13px;padding:10px}.source-card.needed{outline:3px solid #ffdb18}.source-card .big{font-size:34px}
+.source-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.source-actions button{padding:8px;border-radius:9px;border:1px solid #61788b;background:#182532;color:#e4f2ff;font-weight:800}
+.production-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.production-hud div{background:#101711;border:1px solid #49633e;border-radius:10px;padding:8px;text-align:center}
+@media(max-width:650px){.source-market{grid-template-columns:1fr}.source-chain{flex-direction:column}.source-arrow{transform:rotate(90deg)}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -1095,7 +1103,7 @@ function eatLeftover(i){
 }
 function discardLeftover(i){s.leftovers.splice(i,1);save();render();toast('Leftover discarded.')}
 function advancePantryDay(){
- ensureRealStock();
+ ensureRealStock();resetSourceDay();
  Object.keys(ITEMS).forEach(k=>{
    let st=s.stockState[k],loss=st.zone==='Freezer'?0:st.zone==='Fridge'?2:st.zone==='Pantry'?1:4;
    if(st.opened)loss+=1;if(st.prepped)loss+=2;
@@ -1215,7 +1223,7 @@ function resolveEvent(choice){
 function phaseAction(){
  let r=R(),phase=cascadePhaseName();
  if(phase==='PLAN'){if(!r){go('lessons');return toast('Choose a recipe to begin the cascade.')}advanceCascade('planned');return}
- if(phase==='STAGE'){if(!r)return;if(!recipeReadyInWork(r)){pullRecipeIngredients();return}advanceCascade('staged');return}
+ if(phase==='STAGE'){if(!r)return;if(!recipeReadyInWork(r)){s.cg3Screen='pantry';save();renderCG3();return}advanceCascade('staged');return}
  if(phase==='COOK'){if(!r)return;if(s.step<r[6].length-2){toast('Keep cooking until the recipe reaches finishing steps.');return}advanceCascade('cooked');return}
  if(phase==='FINISH'){if(!r)return;advanceCascade('finished');return}
  if(phase==='SERVE'){if(r){toast('Finish and plate the active recipe first.');return}advanceCascade('served');return}
@@ -1327,7 +1335,7 @@ function cg3NextText(){
  let p=cg3Phase()[0];
  if(p==='GET'){
    let miss=Object.entries(r[5]).filter(([k,v])=>workingQty(k)<v).map(([k,v])=>ITEMS[k][0]+' ×'+(v-workingQty(k)));
-   return miss.length?['NEXT: Get '+miss.join(', '),'🧊 GO TO FRIDGE / PANTRY']:['Ingredients ready','CONTINUE'];
+   return miss.length?['NEXT: Produce or collect '+miss.join(', '),'🌾 GO TO INGREDIENT SOURCES']:['Ingredients ready','CONTINUE'];
  }
  if(p==='PREP')return ['NEXT: Prepare the ingredients','🔪 GO TO PREP'];
  if(p==='MIX')return ['NEXT: Combine the ingredients','🥣 GO TO MIXER'];
@@ -1363,7 +1371,7 @@ function cg3Cook(){
 }
 function cg3Pantry(){
  let r=R(),req=r?r[5]:{};
- cg3PantryBody.innerHTML=`<div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>Only take what the recipe needs. Yellow means it belongs to the current recipe.</p>
+ cg3PantryBody.innerHTML=`${cg3Hud()}<div class="cg3-card"><h2>🌾 Ingredient Sources</h2><p>Food begins at its source. Collect or make what the recipe needs, then move it through storage and into the kitchen.</p>${renderSourceGame(r)}</div><div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>After producing ingredients, store them here and pull only what the recipe needs.</p>
  ${r?`<div class="cg3-next">Recipe: ${r[1]} • ${Object.entries(req).map(([k,v])=>ITEMS[k][0]+' ×'+v).join(' • ')}<button onclick="pullRecipeIngredients()">GET ALL NEEDED INGREDIENTS</button></div>`:''}
  ${document.getElementById('realStorageBrowser')?realStorageBrowser.innerHTML:''}
  ${document.getElementById('shoppingNeeds')?shoppingNeeds.innerHTML:''}
@@ -1373,7 +1381,7 @@ function cg3Academy(){
  cg3AcademyBody.innerHTML=`<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
  ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]} • ${masteryRank(s.recipeMastery[ix]||0)}</button>`).join('')}</div>`).join('')}</div>
  <div class="cg3-card"><h2>🔥 Divine Favor</h2>${Object.entries(s.godFavor).map(([k,v])=>`<p>${k} <b>${v}/100</b></p><div class="mastery-track"><i style="width:${Math.min(100,v)}%"></i></div>`).join('')}</div>
- <div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
+ <div class="cg3-card"><h2>🌾 Kitchen Sources</h2><p>Invest rewards into the things that produce your ingredients: chickens, gardens, livestock, orchards and grain plots.</p>${renderSourceGame(R())}</div><div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
  ${s.chests?`<div class="temple-chest"><h2>🎁 Temple Chest ×${s.chests}</h2><button class="cg3-start" onclick="openTempleChest()">OPEN REWARD CHEST</button></div>`:''}</div>`;
 }
 
@@ -1509,6 +1517,74 @@ function operationInstruction(){
 }
 function cg3OperationHeader(){
  let o=operationInstruction();return `${cg3Hud()}<div class="operation-card"><div class="op-now">🟡 DO THIS NOW: ${o[0]}</div><div class="op-sub">${o[1]}</div></div>`;
+}
+
+
+const SOURCES={
+ chicken:{name:'Temple Chicken',icon:'🐔',cost:120,outputs:{eggs:3},desc:'Produces eggs each kitchen day.'},
+ cow:{name:'Celestial Cow',icon:'🐄',cost:220,outputs:{milk:3},desc:'Produces milk. Milk can become cream or butter.'},
+ garden:{name:'Terra Garden',icon:'🌱',cost:160,outputs:{tomato:2,onion:1,carrot:2,spinach:2,herbs:2,lettuce:2,cucumber:1,potato:2},desc:'Grow vegetables and herbs.'},
+ orchard:{name:'Solar Orchard',icon:'🌳',cost:180,outputs:{apple:3,lemon:2},desc:'Produces fruit.'},
+ grain:{name:'Golden Grain Plot',icon:'🌾',cost:170,outputs:{flour:3,rice:2},desc:'Produces flour and rice.'},
+ mushroomBed:{name:'Moon Mushroom Bed',icon:'🍄',cost:140,outputs:{mushroom:3},desc:'Produces mushrooms.'}
+};
+const CRAFTS={
+ butter:{from:{milk:2},icon:'🧈',name:'Churn Butter',makes:2},
+ cream:{from:{milk:2},icon:'🥛',name:'Separate Cream',makes:2},
+ bread:{from:{flour:2,yeast:1},icon:'🍞',name:'Bake Bread',makes:4},
+ cheese:{from:{milk:3},icon:'🧀',name:'Make Cheese',makes:2},
+ tortilla:{from:{flour:2},icon:'🫓',name:'Make Tortillas',makes:6}
+};
+function ensureSources(){
+ if(!s.sources)s.sources={chicken:1,garden:1};
+ if(!s.sourceReady)s.sourceReady={};
+ Object.keys(SOURCES).forEach(k=>{if(s.sourceReady[k]==null)s.sourceReady[k]=true});
+}
+ensureSources();
+function ingredientSource(k){
+ for(const [id,o] of Object.entries(SOURCES))if(o.outputs[k])return id;
+ if(CRAFTS[k])return 'craft';
+ return 'market';
+}
+function sourceLabel(k){
+ let id=ingredientSource(k);if(id==='craft')return CRAFTS[k].name;if(id==='market')return 'Supplier Market';
+ return SOURCES[id].name;
+}
+function buySource(id){
+ ensureSources();let o=SOURCES[id];if(!o||s.sources[id])return;
+ if(s.coins<o.cost)return toast('You need '+o.cost+' coins.');
+ s.coins-=o.cost;s.sources[id]=1;s.sourceReady[id]=true;rewardPopup('UNLOCKED • '+o.icon+' '+o.name);save();render();
+}
+function harvestSource(id){
+ ensureSources();let o=SOURCES[id];if(!o||!s.sources[id])return toast('Unlock this source first.');
+ if(!s.sourceReady[id])return toast(o.name+' has already produced today.');
+ Object.entries(o.outputs).forEach(([k,v])=>{s.inventory[k]=(s.inventory[k]||0)+v;s.fresh[k]=100;if(s.stockState&&s.stockState[k])s.stockState[k].zone=ITEMS[k][2]});
+ s.sourceReady[id]=false;rewardAction('harvest_'+id+'_'+s.shift,'Harvested '+o.name,5,2,id==='garden'?'Terra':id==='chicken'?'Ignis':null,1);save();render();
+}
+function craftIngredient(k){
+ ensureSources();let c=CRAFTS[k];if(!c)return;
+ for(const [x,n] of Object.entries(c.from))if(storageQty(x)+workingQty(x)<n)return toast('Need '+ITEMS[x][0]+' ×'+n);
+ Object.entries(c.from).forEach(([x,n])=>{
+   let w=Math.min(workingQty(x),n);if(w){s.workingInventory[x]-=w;if(s.workingInventory[x]<=0)delete s.workingInventory[x]}
+   let rem=n-w;if(rem)s.inventory[x]=Math.max(0,storageQty(x)-rem);
+ });
+ s.inventory[k]=(s.inventory[k]||0)+c.makes;s.fresh[k]=100;
+ rewardAction('craft_'+k+'_'+Math.floor((s.inventory[k]||0)/c.makes),c.name,6,3,'Ferro',1,1);save();render();
+}
+function resetSourceDay(){ensureSources();Object.keys(SOURCES).forEach(k=>{if(s.sources[k])s.sourceReady[k]=true})}
+function sourceNeedList(r){
+ if(!r)return [];
+ return Object.entries(r[5]).map(([k,n])=>({k,n,have:workingQty(k)+storageQty(k),source:ingredientSource(k)}));
+}
+function renderSourceGame(r){
+ ensureSources();let needs=sourceNeedList(r);
+ let chains=needs.map(x=>{
+   let first=x.source==='craft'?Object.keys(CRAFTS[x.k].from).map(k=>ITEMS[k][1]+' '+ITEMS[k][0]).join(' + '):x.source==='market'?'🚚 Supplier':SOURCES[x.source].icon+' '+SOURCES[x.source].name;
+   return `<div class="source-chain"><div class="source-node"><b>${first}</b><small>SOURCE</small></div><div class="source-arrow">›</div>${x.source==='craft'?`<div class="source-node"><b>⚙️ ${CRAFTS[x.k].name}</b><small>PROCESS</small></div><div class="source-arrow">›</div>`:''}<div class="source-node"><b>${ITEMS[x.k][1]} ${ITEMS[x.k][0]} ×${x.n}</b><small>${x.have>=x.n?'READY':'NEED '+Math.max(0,x.n-x.have)}</small></div></div>`;
+ }).join('');
+ return `<div class="source-board"><h3>🌾 WHERE YOUR FOOD COMES FROM</h3><p>Before the fridge, build or use the source that produces the ingredients for this recipe.</p>${chains||'<p>Choose a recipe to see its food-production chain.</p>'}</div>
+ <div class="source-market">${Object.entries(SOURCES).map(([id,o])=>`<div class="source-card ${needs.some(x=>x.source===id&&x.have<x.n)?'needed':''}"><div class="big">${o.icon}</div><b>${o.name}</b><p>${o.desc}</p><div class="source-actions">${s.sources[id]?`<button onclick="harvestSource('${id}')">${s.sourceReady[id]?'COLLECT':'COLLECTED TODAY'}</button>`:`<button onclick="buySource('${id}')">UNLOCK • ${o.cost} 🪙</button>`}</div></div>`).join('')}
+ ${Object.entries(CRAFTS).map(([k,c])=>`<div class="source-card ${needs.some(x=>x.k===k&&x.have<x.n)?'needed':''}"><div class="big">${c.icon}</div><b>${c.name}</b><p>${Object.entries(c.from).map(([x,n])=>ITEMS[x][0]+' ×'+n).join(' + ')} → ${ITEMS[k][0]} ×${c.makes}</p><button class="btn" onclick="craftIngredient('${k}')">MAKE</button></div>`).join('')}</div>`;
 }
 
 function renderCG3(){
