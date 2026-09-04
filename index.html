@@ -372,6 +372,24 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 .source-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.source-actions button{padding:8px;border-radius:9px;border:1px solid #61788b;background:#182532;color:#e4f2ff;font-weight:800}
 .production-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.production-hud div{background:#101711;border:1px solid #49633e;border-radius:10px;padding:8px;text-align:center}
 @media(max-width:650px){.source-market{grid-template-columns:1fr}.source-chain{flex-direction:column}.source-arrow{transform:rotate(90deg)}}
+
+/* === UNIFIED HEAT ENGINE === */
+.heat-engine{background:#10151c;border:1px solid #536a7e;border-radius:15px;padding:10px;margin:9px 0}
+.heat-readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.heat-readouts div{background:#0b0f14;border-radius:9px;padding:8px;text-align:center;font-size:10px}
+.heat-readouts b{display:block;color:#ffb15e;font-size:18px}
+.heat-state{margin-top:7px;padding:8px;border-radius:9px;background:#1d130c;border:1px solid #6d4828;color:#ffd5a2}
+.pan-thermo{height:10px;background:#17100b;border-radius:99px;overflow:hidden;border:1px solid #5d4025;margin-top:6px}.pan-thermo i{display:block;height:100%;background:linear-gradient(90deg,#5fa6ff,#ffd44f,#ef5d33)}
+
+/* === BEGINNER MISSION MODE === */
+.beginner-mission{background:linear-gradient(180deg,#182219,#0d120d);border:2px solid #5f8d5f;border-radius:16px;padding:12px;margin:10px 0}
+.beginner-mission h3{margin:0 0 6px;color:#dff6a5}
+.beginner-mission .bigstep{font-size:20px;font-weight:1000;color:#ffe37c}
+.beginner-mission .why{margin-top:6px;color:#c9d9c5}
+.beginner-mission .assist{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.beginner-mission button{padding:10px;border-radius:10px;border:1px solid #668467;background:#17301b;color:#e7f6e9;font-weight:900}
+.beginner-mission button.primary{background:#ffdb18;color:#211500;border-color:#fff08d}
+.easy-badge{display:inline-block;background:#d9f2aa;color:#173016;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:1000}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -751,7 +769,7 @@ function renderOvenStage(r){
  let ovenTarget=['Preheat','Roast','Bake'].includes(step);
  let heatProgress=Math.min(100,Math.max(0,Math.round((s.oven/Math.max(1,s.ovenSet))*100)));
  let slot=s.ovenItem?`<div class="oven-slot"><div class="food">${s.ovenItem.emoji}</div><div><b>${s.ovenItem.name}</b><small>Cooking progress ${s.ovenCook}%</small><div class="live-meter"><i style="width:${s.ovenCook}%"></i></div></div><button onclick="removeOvenItem()">REMOVE</button></div>`:`<div class="oven-slot empty"><div class="food">⬜</div><div><b>Oven empty</b><small>Open the door, then load the current recipe.</small></div><button onclick="loadOvenItem()">LOAD</button></div>`;
- ovenStage.innerHTML=`<h3>♨️ OVEN CHAMBER</h3><div class="oven-console">
+ ovenStage.innerHTML=`<h3>♨️ OVEN CHAMBER</h3>${renderUnifiedHeat()}<div class="oven-console">
  <div class="oven-topbar">
    <button onclick="toggleOvenPower()" class="${s.ovenPower?'primary':''}">${s.ovenPower?'POWER ON':'POWER OFF'}</button>
    <div class="temp-stack"><div class="temp-big">${Math.round(s.oven)}°F</div><div class="temp-sub">ACTUAL • SET ${s.ovenSet}°F</div></div>
@@ -795,11 +813,11 @@ function ensureOven2(){
 }
 ensureOven2();
 function setOvenTemp(delta){
- ensureOven2();s.ovenSet=Math.max(200,Math.min(500,s.ovenSet+delta));rewardAction('oven_temp_'+s.ovenSet,'Oven temperature set',s.upgrades.oven1?6:4,1,'Fornax',1);save();render();beep(430,.05);toast('Oven set to '+s.ovenSet+'°F');
+ ensureOven2();ensureHeatEngine();s.cookLocation='oven';s.ovenSet=Math.max(200,Math.min(500,s.ovenSet+delta));rewardAction('oven_temp_'+s.ovenSet,'Oven temperature set',s.upgrades.oven1?6:4,1,'Fornax',1);save();render();beep(430,.05);toast('Oven set to '+s.ovenSet+'°F');
 }
 function setOvenExact(v){ensureOven2();s.ovenSet=v;save();render();toast('Oven set to '+v+'°F')}
 function toggleOvenPower(){
- ensureOven2();s.ovenPower=!s.ovenPower;
+ ensureOven2();ensureHeatEngine();s.cookLocation='oven';s.ovenPower=!s.ovenPower;
  if(s.ovenPower){chefSay('Oven on. Set the temperature, then preheat.');beep(520,.08)}
  else{chefSay('Oven off.');s.oven=Math.max(70,s.oven-20)}
  save();render();
@@ -809,12 +827,12 @@ function loadOvenItem(){
  ensureOven2();let r=R();if(!r)return toast('Start an oven recipe first.');
  if(!s.ovenDoor)return toast('Open the oven door first.');
  if(s.ovenItem)return toast('There is already something in the oven.');
- s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};s.trayInOven=true;s.ovenCook=0;save();render();toast(r[1]+' placed in oven');
+ s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};s.trayInOven=true;s.cookLocation='oven';s.ovenCook=0;save();render();toast(r[1]+' placed in oven');
 }
 function removeOvenItem(){
  ensureOven2();if(!s.ovenDoor)return toast('Open the oven door first.');
  if(!s.ovenItem)return toast('The oven is empty.');
- let name=s.ovenItem.name;s.ovenItem=null;s.trayInOven=false;save();render();toast(name+' removed from oven');
+ let name=s.ovenItem.name;s.ovenItem=null;s.trayInOven=false;s.cookLocation='stove';save();render();toast(name+' removed from oven');
 }
 function ovenTick(){
  ensureOven2();
@@ -894,8 +912,8 @@ function pulseMixer(){
  if(g.marker>=100){g.marker=100;g.dir=-1}
  if(g.marker<=0){g.marker=0;g.dir=1}
  let good=g.marker>=38&&g.marker<=62;
- g.mix=Math.min(100,g.mix+(good?12:6));
- g.texture=Math.min(100,Math.max(0,g.texture+(good?9:(g.speed===3?-3:3))));
+ g.mix=Math.min(100,g.mix+(good?14:(s.beginnerMode?10:6)));
+ g.texture=Math.min(100,Math.max(0,g.texture+(good?10:(s.beginnerMode?6:(g.speed===3?-3:3)))));
  g.score+=good?15:5;if(good)rewardAction('mix_'+Math.floor(g.mix/20),'Perfect mixer timing',s.upgrades.mixer1?4:3,1,'Aqua',1);else rewardMiss();
  beep(good?840:360,.04,good?'sine':'square',.025);
  if(g.mix>=100){
@@ -1253,7 +1271,7 @@ function renderCascade(r){
 }
 function mechanicConsequences(){
  ensureCascade();
- if(s.pressure>75&&Math.random()<.08){breakCombo();chefSay('High pressure broke the combo — slow the kitchen down.')}
+ if(!s.beginnerMode&&s.pressure>75&&Math.random()<.08){breakCombo();chefSay('High pressure broke the combo — slow the kitchen down.')}
  if(s.cleanliness<45)s.food.safety=Math.max(0,(s.food.safety||100)-1);
  if(s.morale<30)s.pressure=Math.min(100,s.pressure+1);
 }
@@ -1288,7 +1306,7 @@ function cg3Go(x){s.cg3Screen=x;save();renderCG3()}
 function cg3Recipe(){return R()}
 function cg3Phase(){return CG3_PHASES[s.cg3Phase]||CG3_PHASES[0]}
 function cg3StartLesson(){
- if(!R()){s.recipe=0;s.step=0}
+ if(!R()||RECIPES[s.recipe][2]>1){s.recipe=0;s.step=0}
  s.cg3LessonStarted=true;s.cg3Phase=0;s.cg3Screen='cook';s.cg3Station='auto';save();render();
 }
 function cg3SelectRecipe(i){
@@ -1365,7 +1383,7 @@ function cg3Cook(){
  else if(station==='sink')focus=document.getElementById('sinkGame')?sinkGame.innerHTML:'';
  else if(station==='prep')focus=`<div class="cg3-card"><h3>🔪 Prep Counter</h3><p>Prepare the highlighted ingredients for ${r[1]}.</p>${Object.entries(r[5]).map(([k,v])=>`<button class="btn" onclick="prepIngredient('${k}')">${ITEMS[k][1]} PREP ${ITEMS[k][0]}</button>`).join('')}</div>`;
  else focus=`<div class="cg3-card"><h3>🍽️ Plating</h3><p>Finish the dish, check seasoning, and make the plate look intentional.</p><button class="btn primary" onclick="s.food.plating=Math.min(100,(s.food.plating||0)+20);rewardAction('plate_'+Math.floor(s.food.plating/20),'Plating improved',s.upgrades.plate1?5:3,1,'Hospita',1);render()">IMPROVE PLATING</button></div>`;
- cg3CookBody.innerHTML=`${cg3OperationHeader()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
+ cg3CookBody.innerHTML=`${cg3OperationHeader()}${renderBeginnerMission()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
  <div class="cg3-focus-stage"><h2>${stationNames[station]||'COOKING STATION'}</h2>${focus}</div>
  <div class="cg3-station-grid">${stationBtns}</div>`;
 }
@@ -1485,7 +1503,7 @@ function cg3Hud(){
 function cg3FinishLesson(){
  ensureRewards();let r=R();if(!r)return;
  let q=quality(),heat=Math.max(0,100-Math.abs((s.food.doneness||70)-80)),timing=Math.min(100,55+s.rewardStreak*7),presentation=s.food.plating||50,clean=s.cleanliness||70;
- let total=Math.round((q+heat+timing+presentation+clean)/5),stars=total>=90?3:total>=75?2:1;
+ let total=Math.round((q+heat+timing+presentation+clean)/5),stars=s.beginnerMode?(total>=80?3:total>=60?2:1):(total>=90?3:total>=75?2:1);
  let old=s.bestScores[s.recipe]||0,newBest=total>old;s.bestScores[s.recipe]=Math.max(old,total);
  let xp=25+stars*15,coins=20+stars*12,god=recipeGod(r),favor=stars*3,tech=stars;
  s.xp+=xp;s.coins+=coins;s.godFavor[god]=(s.godFavor[god]||0)+favor;s.techniquePoints+=tech;
@@ -1585,6 +1603,124 @@ function renderSourceGame(r){
  return `<div class="source-board"><h3>🌾 WHERE YOUR FOOD COMES FROM</h3><p>Before the fridge, build or use the source that produces the ingredients for this recipe.</p>${chains||'<p>Choose a recipe to see its food-production chain.</p>'}</div>
  <div class="source-market">${Object.entries(SOURCES).map(([id,o])=>`<div class="source-card ${needs.some(x=>x.source===id&&x.have<x.n)?'needed':''}"><div class="big">${o.icon}</div><b>${o.name}</b><p>${o.desc}</p><div class="source-actions">${s.sources[id]?`<button onclick="harvestSource('${id}')">${s.sourceReady[id]?'COLLECT':'COLLECTED TODAY'}</button>`:`<button onclick="buySource('${id}')">UNLOCK • ${o.cost} 🪙</button>`}</div></div>`).join('')}
  ${Object.entries(CRAFTS).map(([k,c])=>`<div class="source-card ${needs.some(x=>x.k===k&&x.have<x.n)?'needed':''}"><div class="big">${c.icon}</div><b>${c.name}</b><p>${Object.entries(c.from).map(([x,n])=>ITEMS[x][0]+' ×'+n).join(' + ')} → ${ITEMS[k][0]} ×${c.makes}</p><button class="btn" onclick="craftIngredient('${k}')">MAKE</button></div>`).join('')}</div>`;
+}
+
+
+function ensureHeatEngine(){
+ if(s.panTemp==null)s.panTemp=72;
+ if(s.foodTemp==null)s.foodTemp=72;
+ if(s.activeBurner==null)s.activeBurner=0;
+ if(s.activeCookware==null)s.activeCookware='pan';
+ if(s.cookLocation==null)s.cookLocation='stove';
+}
+ensureHeatEngine();
+function burnerTarget(level){
+ return [72,220,325,425][level||0];
+}
+function heatTick(){
+ ensureHeatEngine();
+ let burnerLevel=(s.burners&&s.burners[s.activeBurner])||0;
+ let panTarget=burnerTarget(burnerLevel);
+ if(s.cookLocation==='stove'){
+   s.panTemp += (panTarget-s.panTemp)*0.18;
+   s.foodTemp += (s.panTemp-s.foodTemp)*0.08;
+   if(s.food){
+     let idealLow=145,idealHigh=210;
+     if(s.foodTemp>idealLow){
+       s.food.doneness=Math.min(100,(s.food.doneness||0)+Math.max(.3,(s.foodTemp-idealLow)/110));
+       s.food.browning=Math.min(100,(s.food.browning||0)+Math.max(0,(s.panTemp-300)/150));
+       if(s.foodTemp>idealHigh+(s.beginnerMode?140:80))s.food.moisture=Math.max(0,(s.food.moisture||100)-(s.beginnerMode?.25:.8));
+     }
+   }
+ } else if(s.cookLocation==='oven'){
+   let ambient=s.oven||72;
+   s.panTemp += (ambient-s.panTemp)*0.12;
+   s.foodTemp += (ambient-s.foodTemp)*0.06;
+   if(s.foodTemp>145){
+     s.food.doneness=Math.min(100,(s.food.doneness||0)+Math.max(.25,(s.foodTemp-140)/160));
+     s.food.browning=Math.min(100,(s.food.browning||0)+Math.max(0,(ambient-300)/240));
+   }
+ }
+}
+function unifiedHeatState(){
+ ensureHeatEngine();
+ let r=R(),step=r?r[6][s.step]:'';
+ let loc=s.cookLocation==='oven'?'OVEN':'STOVETOP';
+ let state='WARMING';
+ if(s.foodTemp<110)state='COOL / WARMING';
+ else if(s.foodTemp<150)state='HEATING THROUGH';
+ else if((s.food.doneness||0)<75)state='COOKING';
+ else if((s.food.doneness||0)<92)state='NEARLY DONE';
+ else state='DONE / WATCH CLOSELY';
+ return {loc,state,step};
+}
+function setCookLocation(loc){
+ ensureHeatEngine();s.cookLocation=loc;save();render();
+}
+function moveFoodToOven(){
+ ensureOven2();ensureHeatEngine();
+ if(!s.ovenItem){
+   let r=R();if(!r)return toast('Start a recipe first.');
+   s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};
+ }
+ s.cookLocation='oven';save();render();toast('Food moved into the oven.');
+}
+function moveFoodToStove(){
+ ensureHeatEngine();s.cookLocation='stove';save();render();toast('Food moved to the stovetop.');
+}
+function renderUnifiedHeat(){
+ ensureHeatEngine();heatTick();
+ let h=unifiedHeatState(),burn=(s.burners&&s.burners[s.activeBurner])||0;
+ return `<div class="heat-engine"><div class="heat-readouts">
+   <div><b>${Math.round(s.panTemp)}°F</b>PAN / TRAY</div>
+   <div><b>${Math.round(s.foodTemp)}°F</b>FOOD</div>
+   <div><b>${s.cookLocation==='oven'?Math.round(s.oven||72)+'°F':heatName(burn)}</b>${s.cookLocation==='oven'?'OVEN':'BURNER'}</div>
+   <div><b>${Math.round(s.food.doneness||0)}%</b>DONENESS</div>
+ </div><div class="pan-thermo"><i style="width:${Math.min(100,Math.max(0,(s.foodTemp-70)/3.6))}%"></i></div>
+ <div class="heat-state"><b>${h.loc} • ${h.state}</b><br><small>${h.step||'Follow the current recipe step.'}</small></div></div>`;
+}
+
+
+function ensureBeginnerMode(){
+ if(s.beginnerMode==null)s.beginnerMode=true;
+ if(s.beginnerHints==null)s.beginnerHints=true;
+}
+ensureBeginnerMode();
+function beginnerCurrentInstruction(){
+ let r=R();if(!r)return['Choose one easy recipe','Pick a beginner lesson and the game will guide each move.'];
+ let p=cg3Phase()[0];
+ if(p==='GET')return['Get the ingredients','Press AUTO GET and the game will pull anything you already own.'];
+ if(p==='PREP')return['Prepare the food','Tap PREP ALL and the ingredients will be staged for you.'];
+ if(p==='MIX')return['Mix gently','Use LOW speed. You do not need perfect timing in Beginner Mode.'];
+ if(p==='COOK'){
+   let st=cg3StationForCurrent();
+   if(st==='oven')return['Use the oven','Set the suggested temperature, then load the food. The game is forgiving.'];
+   return['Cook on low or medium','Use one burner only. The game gives you extra time before food burns.'];
+ }
+ if(p==='PLATE')return['Put it on the plate','One tap is enough to finish plating.'];
+ return['Clean up','Use AUTO CLEAN or practice the sink steps yourself.'];
+}
+function beginnerAutoAction(){
+ let r=R();if(!r)return cg3StartLesson();
+ let p=cg3Phase()[0];
+ if(p==='GET'){pullRecipeIngredients();return}
+ if(p==='PREP'){
+   Object.keys(r[5]).forEach(k=>{if(s.stockState&&s.stockState[k]){s.stockState[k].prepped=true;s.stockState[k].zone='Counter'}});
+   rewardAction('beginner_prep','Prep complete',3,2,'Terra',1);cg3NextPhase();return;
+ }
+ if(p==='MIX'){rewardAction('beginner_mix','Mix complete',3,2,'Aqua',1);cg3NextPhase();return}
+ if(p==='COOK'){
+   if(cg3StationForCurrent()==='oven'){s.ovenSet=350;s.ovenPower=true;s.oven=Math.max(s.oven,325);s.food.doneness=Math.max(s.food.doneness||0,80);s.food.browning=Math.max(s.food.browning||0,55);rewardAction('beginner_oven','Oven step complete',5,3,'Fornax',1)}
+   else{s.activeBurner=0;if(s.burners)s.burners[0]=1;s.panTemp=250;s.foodTemp=165;s.food.doneness=Math.max(s.food.doneness||0,80);s.food.browning=Math.max(s.food.browning||0,50);rewardAction('beginner_stove','Cooking step complete',5,3,'Ignis',1)}
+   cg3NextPhase();return;
+ }
+ if(p==='PLATE'){s.food.plating=Math.max(s.food.plating||0,80);rewardAction('beginner_plate','Plating complete',3,2,'Hospita',1);cg3NextPhase();return}
+ if(p==='CLEAN'){s.cleanliness=100;rewardAction('beginner_clean','Kitchen clean',3,2,'Hospita',1);cg3NextPhase();return}
+}
+function renderBeginnerMission(){
+ if(!s.beginnerMode)return'';
+ let x=beginnerCurrentInstruction();
+ return `<div class="beginner-mission"><span class="easy-badge">BEGINNER MODE</span><h3>One thing at a time</h3><div class="bigstep">${x[0]}</div><div class="why">${x[1]}</div><div class="assist"><button class="primary" onclick="beginnerAutoAction()">HELP ME DO THIS</button><button onclick="cg3Help()">SHOW ME WHERE</button></div></div>`;
 }
 
 function renderCG3(){
