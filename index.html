@@ -577,6 +577,44 @@ padding:14px 18px;min-width:220px;max-width:82vw;text-align:center;box-shadow:0 
 .loot-progress{height:8px;border-radius:999px;background:#222a31;overflow:hidden;margin-top:7px}.loot-progress i{display:block;height:100%;background:#e7bd63}
 .sound-chip{display:inline-flex;align-items:center;gap:5px;background:#10171d;border:1px solid #3d4a55;border-radius:999px;padding:5px 8px;font-size:10px;color:#d8e0e6}
 @media(max-width:420px){.inventory-loot-grid{grid-template-columns:1fr}}
+
+/* === DIVINE RUSH ARCADE MODE 12.0 === */
+#divineRushLauncher{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147482900;
+width:min(420px,92vw);min-height:58px;border:2px solid #ffd400;border-radius:18px;background:linear-gradient(180deg,#2c2200,#11151a);
+color:#fff;font-weight:1000;font-size:18px;box-shadow:0 0 28px #ffd40055,0 10px 30px #0009}
+#divineRushLauncher span{color:#ffd400}
+#divineRush{position:fixed;inset:0;z-index:2147483600;background:
+radial-gradient(circle at 50% 20%,#3d2900 0,#111820 38%,#05070a 76%);display:none;overflow:auto;color:#fff}
+#divineRush.open{display:block}
+.dr-shell{width:min(720px,100%);margin:auto;padding:calc(12px + env(safe-area-inset-top)) 12px calc(90px + env(safe-area-inset-bottom))}
+.dr-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dr-title{font-size:30px;font-weight:1000;letter-spacing:-1px;color:#ffe17a;text-shadow:0 0 18px #f4b40055}
+.dr-close{width:auto!important;min-width:48px;min-height:48px;border-radius:14px;border:1px solid #5d6872;background:#101820;color:#fff;font-size:21px;font-weight:900}
+.dr-hero{position:relative;height:180px;border-radius:22px;overflow:hidden;border:1px solid #806332;margin:10px 0;background-size:cover;background-position:center}
+.dr-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0000 20%,#080b10e8 90%)}
+.dr-hero-copy{position:absolute;left:14px;right:14px;bottom:12px;z-index:2}.dr-hero-copy b{display:block;font-size:27px;color:#fff2ba}.dr-hero-copy span{color:#d7d0c2}
+.dr-hud{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:9px 0}
+.dr-hud div{background:#10161d;border:1px solid #39444e;border-radius:12px;padding:8px;text-align:center;font-size:10px;color:#aeb7bf}
+.dr-hud b{display:block;font-size:20px;color:#fff}
+.dr-arena{background:#0a0e13;border:1px solid #4d5963;border-radius:22px;padding:12px;position:relative;overflow:hidden}
+.dr-track{height:54px;border-radius:999px;background:#151b21;border:1px solid #49535c;position:relative;overflow:hidden;margin:10px 0}
+.dr-zone{position:absolute;top:0;bottom:0;left:42%;width:16%;background:linear-gradient(180deg,#ffd400,#c59200);box-shadow:0 0 20px #ffd40088}
+.dr-marker{position:absolute;top:5px;width:44px;height:44px;border-radius:50%;background:#fff;border:5px solid #ff7b00;box-shadow:0 0 16px #ff7b00aa;left:0}
+.dr-order{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:center;background:#111820;border:1px solid #3a4650;border-radius:15px;padding:9px;margin:8px 0}
+.dr-order-art{height:78px;border-radius:11px;background-size:cover;background-position:center;border:1px solid #56616a}
+.dr-order b{display:block;color:#ffe4a1;font-size:17px}.dr-order small{color:#aeb8bf}
+.dr-action{width:100%;min-height:74px;border:0;border-radius:18px;background:#ffd400;color:#241a00;font-size:24px;font-weight:1000;box-shadow:0 7px 0 #8f6900;margin-top:10px}
+.dr-action:active{transform:translateY(3px);box-shadow:0 3px 0 #8f6900}
+.dr-power-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.dr-power{min-height:52px;border-radius:12px;border:1px solid #505c66;background:#151d24;color:#fff;font-weight:900;font-size:12px}
+.dr-power.ready{border-color:#ffd400;box-shadow:0 0 14px #ffd40044}
+.dr-feed{margin-top:9px;background:#090d11;border:1px solid #303b45;border-radius:12px;padding:8px;min-height:54px;color:#d7dde2}
+.dr-combo{font-size:34px;font-weight:1000;color:#ffd400;text-align:center;margin:5px 0}
+.dr-flash{position:absolute;inset:0;pointer-events:none;opacity:0}.dr-flash.good{background:#f5d54255;animation:drFlash .35s}.dr-flash.bad{background:#c6282855;animation:drFlash .35s}
+@keyframes drFlash{0%{opacity:1}100%{opacity:0}}
+.dr-result{display:none;background:#111820;border:1px solid #75602e;border-radius:18px;padding:14px;text-align:center;margin-top:10px}
+.dr-result.show{display:block}.dr-result h2{color:#ffe17a;margin:4px 0}.dr-result button{min-height:58px;border-radius:14px;border:0;background:#ffd400;color:#211800;font-weight:1000;font-size:18px;width:100%;margin-top:8px}
+@media(max-width:480px){.dr-title{font-size:25px}.dr-hero{height:145px}.dr-hud b{font-size:16px}.dr-action{font-size:21px}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -3064,4 +3102,145 @@ setTimeout(()=>{
  ensureLoot();injectLootInventory();injectSoundToggle();
  lootObs.observe(document.body,{childList:true,subtree:true});
 },220);
+</script><script>
+/* === DIVINE RUSH: ATTENTION-GRABBING GAME-WITHIN-THE-GAME === */
+const DR_ORDERS=[
+ {name:'Flame Eggs',art:'scrambled',need:'TIMING'},
+ {name:'Temple Roast',art:'plate_big',need:'HEAT'},
+ {name:'Golden Bread',art:'oven_core',need:'OVEN'},
+ {name:'Garden Plate',art:'ingredient_big',need:'PRECISION'},
+ {name:'Fornax Sear',art:'stove_big',need:'SPEED'}
+];
+window.DR={open:false,running:false,score:0,combo:0,best:0,lives:3,time:45,marker:0,dir:1,speed:1.25,order:0,power:0,freeze:0,shield:0,timer:null,raf:null,last:0};
+function ensureDRState(){
+ try{
+   if(window.s){
+     if(!Number.isFinite(Number(s.divineRushBest)))s.divineRushBest=0;
+     if(!Number.isFinite(Number(s.divineRushPlays)))s.divineRushPlays=0;
+   }
+ }catch(e){}
+}
+function drArt(key){try{return (window.CG_ART&&CG_ART[key])||''}catch(e){return''}}
+function installDivineRush(){
+ if(document.getElementById('divineRush'))return;
+ let launch=document.createElement('button');launch.id='divineRushLauncher';
+ launch.innerHTML='⚡ <span>PLAY DIVINE RUSH</span> • WIN LOOT';
+ launch.onclick=openDivineRush;document.body.appendChild(launch);
+
+ let el=document.createElement('div');el.id='divineRush';
+ el.innerHTML=`<div class="dr-shell">
+   <div class="dr-top"><div><div class="dr-title">⚡ DIVINE RUSH</div><small>Arcade kitchen • fast rewards • real inventory loot</small></div><button class="dr-close" onclick="closeDivineRush()">✕</button></div>
+   <div class="dr-hero" style="background-image:url('${drArt('fornax_big')||drArt('mentor')}')"><div class="dr-hero-copy"><b>COOK UNDER PRESSURE</b><span>Hit the golden zone. Build the combo. Unleash god powers.</span></div></div>
+   <div class="dr-hud">
+    <div><b id="drScore">0</b>SCORE</div><div><b id="drCombo">×0</b>COMBO</div><div><b id="drLives">❤️❤️❤️</b>LIVES</div><div><b id="drTime">45</b>SECONDS</div>
+   </div>
+   <div class="dr-arena">
+    <div id="drFlash" class="dr-flash"></div>
+    <div class="dr-order"><div id="drOrderArt" class="dr-order-art"></div><div><small>ACTIVE ORDER</small><b id="drOrderName">Flame Eggs</b><small id="drOrderNeed">TIMING</small></div></div>
+    <div class="dr-combo" id="drBigCombo">×0</div>
+    <div class="dr-track"><div class="dr-zone"></div><div id="drMarker" class="dr-marker"></div></div>
+    <button class="dr-action" id="drAction" onclick="divineRushHit()">🔥 COOK NOW!</button>
+    <div class="dr-power-row">
+      <button class="dr-power" id="drPowerFreeze" onclick="drPower('freeze')">❄️ SLOW TIME</button>
+      <button class="dr-power" id="drPowerShield" onclick="drPower('shield')">🛡️ SAVE MISS</button>
+      <button class="dr-power" id="drPowerBurst" onclick="drPower('burst')">⚡ GOD BURST</button>
+    </div>
+    <div class="dr-feed" id="drFeed">Press START and hit COOK NOW when the marker crosses the gold.</div>
+   </div>
+   <div class="dr-result" id="drResult"><h2 id="drResultTitle">RUN COMPLETE</h2><div id="drResultText"></div><button onclick="startDivineRush()">▶ PLAY AGAIN</button><button onclick="claimDivineRush()">🎁 CLAIM & RETURN</button></div>
+   <button class="dr-action" id="drStart" onclick="startDivineRush()">▶ START DIVINE RUSH</button>
+ </div>`;
+ document.body.appendChild(el);
+}
+function openDivineRush(){
+ ensureDRState();DR.open=true;document.getElementById('divineRush').classList.add('open');
+ cgSound&&cgSound('nav');drRender();window.scrollTo(0,0);
+}
+function closeDivineRush(){
+ drStop();DR.open=false;document.getElementById('divineRush').classList.remove('open');
+}
+function startDivineRush(){
+ drStop();
+ DR.running=true;DR.score=0;DR.combo=0;DR.lives=3;DR.time=45;DR.marker=0;DR.dir=1;DR.speed=1.25;DR.order=Math.floor(Math.random()*DR_ORDERS.length);DR.power=0;DR.freeze=0;DR.shield=0;DR.last=performance.now();
+ document.getElementById('drStart').style.display='none';document.getElementById('drResult').classList.remove('show');
+ drNextOrder();drRender();cgSound&&cgSound('success');
+ DR.timer=setInterval(()=>{if(!DR.running)return;DR.time--;if(DR.time<=0)endDivineRush();drRender()},1000);
+ DR.raf=requestAnimationFrame(drLoop);
+}
+function drStop(){DR.running=false;if(DR.timer){clearInterval(DR.timer);DR.timer=null}if(DR.raf){cancelAnimationFrame(DR.raf);DR.raf=null}}
+function drLoop(t){
+ if(!DR.running)return;
+ let dt=Math.min(.04,(t-DR.last)/1000||0);DR.last=t;
+ let slow=DR.freeze>0?.45:1;DR.marker+=DR.dir*DR.speed*slow*dt*100;
+ if(DR.marker>=94){DR.marker=94;DR.dir=-1}if(DR.marker<=0){DR.marker=0;DR.dir=1}
+ if(DR.freeze>0)DR.freeze-=dt;
+ let m=document.getElementById('drMarker');if(m)m.style.left=DR.marker+'%';
+ DR.raf=requestAnimationFrame(drLoop);
+}
+function divineRushHit(){
+ if(!DR.running)return;
+ let center=DR.marker+3,dist=Math.abs(center-50);
+ let perfect=dist<=5,good=dist<=11;
+ if(perfect){
+   DR.combo++;DR.score+=100+DR.combo*12;DR.power=Math.min(100,DR.power+24);DR.speed=Math.min(2.8,DR.speed+.08);
+   drFeedback('PERFECT! +'+(100+DR.combo*12),'good');cgSound&&cgSound('success');
+ }else if(good){
+   DR.combo++;DR.score+=55+DR.combo*7;DR.power=Math.min(100,DR.power+14);DR.speed=Math.min(2.7,DR.speed+.05);
+   drFeedback('GREAT! +'+(55+DR.combo*7),'good');cgSound&&cgSound('reward');
+ }else{
+   if(DR.shield>0){DR.shield=0;drFeedback('SHIELD SAVED IT!','good');cgSound&&cgSound('item')}
+   else{DR.combo=0;DR.lives--;drFeedback('BURN! MISS','bad');cgSound&&cgSound('error')}
+   DR.speed=Math.max(1.1,DR.speed-.12);
+   if(DR.lives<=0){endDivineRush();return}
+ }
+ drNextOrder();drRender();
+}
+function drNextOrder(){DR.order=(DR.order+1)%DR_ORDERS.length;let o=DR_ORDERS[DR.order];let a=document.getElementById('drOrderArt');if(a)a.style.backgroundImage=`url('${drArt(o.art)}')`;document.getElementById('drOrderName').textContent=o.name;document.getElementById('drOrderNeed').textContent=o.need}
+function drFeedback(text,type){
+ let f=document.getElementById('drFeed');if(f)f.innerHTML='<b>'+text+'</b><br>Keep the rhythm going.';
+ let flash=document.getElementById('drFlash');if(flash){flash.className='dr-flash '+type;setTimeout(()=>flash.className='dr-flash',360)}
+}
+function drPower(kind){
+ if(!DR.running||DR.power<100)return;
+ DR.power=0;
+ if(kind==='freeze'){DR.freeze=5;drFeedback('❄️ TIME BENDS FOR YOU','good')}
+ if(kind==='shield'){DR.shield=1;drFeedback('🛡️ NEXT MISS IS PROTECTED','good')}
+ if(kind==='burst'){DR.score+=500;DR.combo+=3;drFeedback('⚡ GOD BURST +500','good')}
+ cgSound&&cgSound('item');drRender();
+}
+function drRender(){
+ let q=id=>document.getElementById(id);
+ if(q('drScore'))q('drScore').textContent=DR.score;
+ if(q('drCombo'))q('drCombo').textContent='×'+DR.combo;
+ if(q('drBigCombo'))q('drBigCombo').textContent='×'+DR.combo;
+ if(q('drLives'))q('drLives').textContent='❤️'.repeat(Math.max(0,DR.lives))||'💀';
+ if(q('drTime'))q('drTime').textContent=DR.time;
+ ['Freeze','Shield','Burst'].forEach(x=>{let b=q('drPower'+x);if(b)b.classList.toggle('ready',DR.power>=100)});
+ if(q('drPowerFreeze'))q('drPowerFreeze').textContent=(DR.power>=100?'❄️ SLOW TIME':'❄️ '+DR.power+'%');
+ if(q('drPowerShield'))q('drPowerShield').textContent=(DR.power>=100?'🛡️ SAVE MISS':'🛡️ '+DR.power+'%');
+ if(q('drPowerBurst'))q('drPowerBurst').textContent=(DR.power>=100?'⚡ GOD BURST':'⚡ '+DR.power+'%');
+}
+function endDivineRush(){
+ if(!DR.running)return;
+ drStop();ensureDRState();
+ let best=Math.max((window.s&&s.divineRushBest)||0,DR.score);
+ if(window.s){s.divineRushBest=best;s.divineRushPlays=(s.divineRushPlays||0)+1;try{save()}catch(e){}}
+ let rank=DR.score>=2500?'GODLIKE':DR.score>=1500?'DIVINE':DR.score>=800?'MASTER':'APPRENTICE';
+ document.getElementById('drResultTitle').textContent=rank+' RUN';
+ document.getElementById('drResultText').innerHTML=`<b style="font-size:28px;color:#ffe17a">${DR.score} POINTS</b><br>Best: ${best}<br>Rewards ready: +${Math.max(15,Math.floor(DR.score/35))} coins • +${Math.max(8,Math.floor(DR.score/80))} XP • loot drop`;
+ document.getElementById('drResult').classList.add('show');document.getElementById('drStart').style.display='none';
+ cgSound&&cgSound('success');
+}
+function claimDivineRush(){
+ ensureDRState();
+ let coins=Math.max(15,Math.floor(DR.score/35)),xp=Math.max(8,Math.floor(DR.score/80));
+ try{
+   if(window.s){s.coins=(s.coins||0)+coins;s.xp=Math.min(100,(s.xp||0)+xp);save()}
+   if(typeof awardLoot==='function')awardLoot(true);
+   if(typeof cgRewardPopup==='function')cgRewardPopup('DIVINE RUSH CLAIMED',coins,xp);
+ }catch(e){}
+ closeDivineRush();
+ try{if(typeof render==='function')render()}catch(e){}
+}
+setTimeout(installDivineRush,300);
 </script></body></html>
