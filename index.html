@@ -436,6 +436,36 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 .heat-wave{position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 18px,#ff7a1814 20px 22px);animation:heatWave 1.3s linear infinite;pointer-events:none}
 @keyframes heatWave{to{transform:translateY(-22px)}}
 @media(max-width:620px){.oven-effects{grid-template-columns:repeat(2,1fr)}}
+
+/* === KITCHEN THEATER + CASCADE 5.0 === */
+.theater-panel{background:linear-gradient(180deg,#1a1110,#090708);border:2px solid #8f5b35;border-radius:18px;padding:12px;margin:10px 0;box-shadow:0 0 28px #9b431b33}
+.theater-title{font-size:22px;font-weight:1000;color:#ffd089}.theater-sub{color:#cbb8a8;font-size:14px}
+.theater-feed{display:grid;gap:7px;margin-top:8px}.theater-event{background:#120d0d;border:1px solid #5e443b;border-radius:11px;padding:9px}
+.theater-event.hot{border-color:#ff7845;box-shadow:0 0 16px #ff6b2d33}.theater-event.good{border-color:#6aa86e}.theater-event.warn{border-color:#d3a14a}
+.temp-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.temp-controls button{min-height:48px;border-radius:11px;border:1px solid #6a7380;background:#171f29;color:#eef7ff;font-weight:900}
+.temp-controls button.hot{background:#672316}.temp-controls button.cool{background:#17354f}
+.temp-scale{height:14px;background:linear-gradient(90deg,#284e8f,#59a6d9,#e5c65e,#f57a2f,#b71f1f);border-radius:99px;position:relative;margin:7px 0}
+.temp-marker{position:absolute;top:-4px;width:5px;height:22px;background:#fff;border-radius:3px;box-shadow:0 0 8px #fff}
+.cascade-chain{display:flex;gap:7px;overflow:auto;margin-top:8px}.cascade-node{min-width:135px;background:#111820;border:1px solid #536574;border-radius:11px;padding:8px;text-align:center}.cascade-arrow{align-self:center;font-size:22px;color:#ffcf72}
+.stage-lights{display:flex;gap:6px;justify-content:center;margin-top:8px}.stage-lights i{width:14px;height:14px;border-radius:50%;background:#322}.stage-lights i.on{background:#ffdb18;box-shadow:0 0 15px #ffdb18}
+@media(max-width:620px){.temp-controls{grid-template-columns:repeat(2,1fr)}}
+
+/* === DIVINE KITCHEN OS === */
+.kos{background:linear-gradient(180deg,#0e1620,#071018);border:2px solid #4d8caf;border-radius:18px;padding:12px;margin:10px 0;box-shadow:0 0 30px #3c87b533}
+.kos-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.kos-title{font-size:24px;font-weight:1000;color:#9fe5ff}
+.kos-status{font-size:12px;color:#c7dbe7}
+.kos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}
+.kos-tile{background:#101923;border:1px solid #476276;border-radius:12px;padding:9px;min-height:86px;cursor:pointer}
+.kos-tile.online{border-color:#4f9b6d}.kos-tile.warn{border-color:#d7a74a}.kos-tile.hot{border-color:#f06b3d}.kos-tile.wait{opacity:.8}
+.kos-tile b{display:block;font-size:15px;color:#eefaff}.kos-tile small{display:block;color:#9eb6c6;margin-top:3px}
+.kos-next{margin-top:10px;background:#ffdb18;color:#211600;border-radius:13px;padding:12px;font-size:19px;font-weight:1000}
+.kos-log{display:grid;gap:6px;margin-top:8px}.kos-msg{background:#0c131b;border:1px solid #394c5b;border-radius:9px;padding:8px;font-size:13px}
+.appliance-readout{background:#071018;border:1px solid #3e627b;border-radius:11px;padding:8px;margin:7px 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.appliance-readout .row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1b2a36;padding:4px 0}.appliance-readout .row:last-child{border-bottom:0}.appliance-readout strong{color:#9fe5ff}
+.smart-chip{display:inline-block;border-radius:999px;background:#193349;color:#bcecff;padding:3px 7px;font-size:10px;font-weight:1000}
+.god-voice{background:linear-gradient(90deg,#2c1407,#53240a);border:1px solid #a95a22;border-radius:10px;padding:8px;color:#ffd7a5;margin-top:7px}
+@media(max-width:700px){.kos-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -815,11 +845,11 @@ function renderOvenStage(r){
  let ovenTarget=['Preheat','Roast','Bake'].includes(step);
  let heatProgress=Math.min(100,Math.max(0,Math.round((s.oven/Math.max(1,s.ovenSet))*100)));
  let slot=s.ovenItem?`<div class="oven-slot"><div class="food">${s.ovenItem.emoji}</div><div><b>${s.ovenItem.name}</b><small>Cooking progress ${s.ovenCook}%</small><div class="live-meter"><i style="width:${s.ovenCook}%"></i></div></div><button onclick="removeOvenItem()">REMOVE</button></div>`:`<div class="oven-slot empty"><div class="food">⬜</div><div><b>Oven empty</b><small>Open the door, then load the current recipe.</small></div><button onclick="loadOvenItem()">LOAD</button></div>`;
- ovenStage.innerHTML=`<h3>♨️ OVEN CHAMBER</h3>${renderUnifiedHeat()}<div class="oven-console">
+ ovenStage.innerHTML=`<h3>♨️ OVEN CHAMBER</h3>${applianceReadout('oven')}${renderUnifiedHeat()}${renderTempTheater()}<div class="oven-console">
  <div class="oven-topbar">
    <button onclick="toggleOvenPower()" class="${s.ovenPower?'primary':''}">${s.ovenPower?'POWER ON':'POWER OFF'}</button>
    <div class="temp-stack"><div class="temp-big">${Math.round(s.oven)}°F</div><div class="temp-sub">ACTUAL • SET ${s.ovenSet}°F</div></div>
-   <div class="temp-buttons"><button onclick="setOvenTemp(-25)">−25°</button><button onclick="setOvenExact(350)">350°</button><button onclick="setOvenTemp(25)">+25°</button></div>
+   <div class="temp-buttons"><button onclick="setOvenTemp(-25)">−25°</button><button onclick="setOvenExact(350)">350°</button><button onclick="setOvenExact(200)">COOL TO 200°F</button><button onclick="setOvenTemp(25)">+25°</button></div>
  </div>
  <div class="oven-function-row">
   ${['BAKE','ROAST','BROIL','KEEP WARM'].map(x=>`<button class="${s.ovenMode===x?'primary':''}" onclick="setOvenMode('${x}')">${x}</button>`).join('')}
@@ -859,7 +889,7 @@ function ensureOven2(){
 }
 ensureOven2();
 function setOvenTemp(delta){
- ensureOven2();ensureHeatEngine();s.cookLocation='oven';s.ovenSet=Math.max(200,Math.min(500,s.ovenSet+delta));rewardAction('oven_temp_'+s.ovenSet,'Oven temperature set',s.upgrades.oven1?6:4,1,'Fornax',1);save();render();beep(430,.05);toast('Oven set to '+s.ovenSet+'°F');
+ ensureOven2();ensureHeatEngine();s.cookLocation='oven';s.ovenSet=Math.max(100,Math.min(600,s.ovenSet+delta));rewardAction('oven_temp_'+s.ovenSet,'Oven temperature set',s.upgrades.oven1?6:4,1,'Fornax',1);save();render();beep(430,.05);toast('Oven set to '+s.ovenSet+'°F');
 }
 function setOvenExact(v){ensureOven2();s.ovenSet=v;save();render();toast('Oven set to '+v+'°F')}
 function toggleOvenPower(){
@@ -881,20 +911,75 @@ function removeOvenItem(){
  if(!s.ovenItem)return toast('The oven is empty.');
  let name=s.ovenItem.name;s.ovenItem=null;s.trayInOven=false;s.cookLocation='stove';save();render();toast(name+' removed from oven');
 }
-function ovenTick(){
+
+/* === OVEN THERMAL INERTIA FIX === */
+function ovenAmbientTarget(){
  ensureOven2();ensureOvenLab();
- if(s.ovenPower){
-   let target=s.ovenSet;
-   if(s.ovenMode==='BROIL')target=Math.max(target,475);
-   if(s.ovenMode==='KEEP WARM')target=Math.min(target,200);
-   if(!s.ovenDoor){
-     let dir=s.oven<target?1:-1;
-     if(Math.abs(s.oven-target)>2)s.oven+=dir*Math.min(s.ovenFan?16:12,Math.abs(target-s.oven));
-   } else {
-     s.oven=Math.max(72,s.oven-35);
+ if(!s.ovenPower)return 72;
+ let target=s.ovenSet||350;
+ if(s.ovenMode==='BROIL')target=Math.max(target,500);
+ if(s.ovenMode==='KEEP WARM')target=Math.min(target,200);
+ return target;
+}
+function ovenThermalStep(){
+ ensureOven2();ensureOvenLab();ensureHeatEngine();
+
+ let room=72;
+ let target=ovenAmbientTarget();
+ let current=s.oven||room;
+
+ // Door open: aggressive heat dump toward room temperature.
+ if(s.ovenDoor){
+   let drop=Math.max(4,(current-room)*0.12);
+   current=Math.max(room,current-drop);
+ } else if(s.ovenPower){
+   // Powered oven can heat OR cool toward a lower setpoint.
+   let diff=target-current;
+   let rate=s.ovenFan?0.18:0.12;
+   current += diff*rate;
+   if(Math.abs(diff)<0.8)current=target;
+ } else {
+   // Power off: passive cooldown with thermal inertia.
+   current += (room-current)*0.065;
+   if(Math.abs(current-room)<0.6)current=room;
+ }
+
+ // Cold food / cookware creates a temporary thermal load.
+ if(s.ovenItem && !s.ovenDoor){
+   let foodT=s.foodTemp==null?72:s.foodTemp;
+   if(foodT<current){
+     let load=Math.min(7,Math.max(0,(current-foodT)/65));
+     current=Math.max(room,current-load);
    }
+ }
+
+ s.oven=Math.round(current*10)/10;
+}
+
+function ovenTick(){
+ ensureOven2();ensureOvenLab();ensureHeatEngine();
+
+ ovenThermalStep();
+
+ if(s.ovenPower){
    applyOvenPhysics();
-   if(s.ovenItem&&s.ovenCook>=100&&!s.ovenDoneDing){s.ovenDoneDing=true;ovenDing();chefSay('Oven dish ready! Open the door and remove it.');easyFX('🔔')}
+
+   if(s.ovenItem&&s.ovenCook>=100&&!s.ovenDoneDing){
+     s.ovenDoneDing=true;
+     ovenDing();
+     chefSay('Oven dish ready! Open the door and remove it.');
+     easyFX('🔔');
+   }
+ } else {
+   // Food and cookware also cool when the oven is off.
+   s.panTemp += (s.oven-s.panTemp)*0.08;
+   s.foodTemp += (s.oven-s.foodTemp)*0.03;
+ }
+
+ // Door-open cooling affects food/tray too.
+ if(s.ovenDoor){
+   s.panTemp += (72-s.panTemp)*0.06;
+   s.foodTemp += (72-s.foodTemp)*0.02;
  }
 }
 
@@ -931,7 +1016,7 @@ function rinseDish(){
  if(s.sinkGame.rinse>=100){
    s.food.safety=Math.min(100,(s.food.safety||0)+8);s.cleanliness=Math.min(100,s.cleanliness+18);s.pressure=Math.max(0,s.pressure-3);
    s.skills['Knife & Prep']=Math.min(100,(s.skills['Knife & Prep']||0)+1);
-   rewardAction('clean','Clean station',3,2,'Hospita',1);chefSay('Clean station! That is how a real kitchen stays under control.');
+   Object.keys(s.applianceDirty||{}).forEach(k=>s.applianceDirty[k]=false);kosLog('🚰 Sink reports all cookware sanitized.');rewardAction('clean','Clean station',3,2,'Hospita',1);chefSay('Clean station! That is how a real kitchen stays under control.');
    addCombo(8);s.sinkGame={water:false,soap:0,scrub:0,rinse:0,score:0};
  }
  save();render();
@@ -955,7 +1040,7 @@ function setMixerSpeed(n){
  else chefSay('High speed works fast — watch the texture.');
  beep(300+n*140,.05);save();render();
 }
-function pulseMixer(){
+function pulseMixer(){ensureKitchenOS();s.applianceDirty.mixer=true;
  ensureStationGames();let g=s.mixerGame;
  if(g.speed===0)return toast('Choose a mixer speed first.');
  g.marker+=g.dir*(12+g.speed*4);
@@ -1147,7 +1232,7 @@ function openPackage(k){
  ensureRealStock();if((s.inventory[k]||0)<=0)return toast('No package to open.');
  s.stockState[k].opened=true;save();render();toast(ITEMS[k][0]+' package opened.');
 }
-function prepIngredient(k){
+function prepIngredient(k){ensureKitchenOS();s.applianceDirty.knife=true;s.applianceDirty.board=true;
  ensureRealStock();
  if((s.inventory[k]||0)+(s.workingInventory[k]||0)<=0)return toast('You need '+ITEMS[k][0]+' first.');
  if(s.stockState[k].frozen)return toast('Move it out of the freezer before prepping.');
@@ -1433,13 +1518,13 @@ function cg3Cook(){
  else if(station==='sink')focus=document.getElementById('sinkGame')?sinkGame.innerHTML:'';
  else if(station==='prep')focus=`<div class="cg3-card"><h3>🔪 Prep Counter</h3><p>Prepare the highlighted ingredients for ${r[1]}.</p>${Object.entries(r[5]).map(([k,v])=>`<button class="btn" onclick="prepIngredient('${k}')">${ITEMS[k][1]} PREP ${ITEMS[k][0]}</button>`).join('')}</div>`;
  else focus=`<div class="cg3-card"><h3>🍽️ Plating</h3><p>Finish the dish, check seasoning, and make the plate look intentional.</p><button class="btn primary" onclick="s.food.plating=Math.min(100,(s.food.plating||0)+20);rewardAction('plate_'+Math.floor(s.food.plating/20),'Plating improved',s.upgrades.plate1?5:3,1,'Hospita',1);render()">IMPROVE PLATING</button></div>`;
- cg3CookBody.innerHTML=`${ultraSimplePanel()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
+ cg3CookBody.innerHTML=`${renderKitchenOS()}${ultraSimplePanel()}<div class="cg3-card"><h2>${r[1]}</h2>${cg3RenderSteps()}<div class="cg3-next" onclick="cg3Help()">${nxt[0]}<button onclick="event.stopPropagation();cg3DoNext()">${nxt[1]}</button></div></div>
  <div class="cg3-focus-stage"><h2>${stationNames[station]||'COOKING STATION'}</h2>${focus}</div>
  <div class="cg3-station-grid">${stationBtns}</div>`;
 }
 function cg3Pantry(){
  let r=R(),req=r?r[5]:{};
- cg3PantryBody.innerHTML=`${cg3Hud()}<div class="cg3-card"><h2>🌾 Ingredient Sources</h2><p>Press one button and the game collects, makes, and stages anything currently available.</p><button class="easy-mainbtn" onclick="easySourceForRecipe()">GET WHAT I NEED</button>${renderSourceGame(r)}</div><div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>After producing ingredients, store them here and pull only what the recipe needs.</p>
+ cg3PantryBody.innerHTML=`${cg3Hud()}<div class="cg3-card">${applianceReadout('fridge')}<h2>🌾 Ingredient Sources</h2><p>Press one button and the game collects, makes, and stages anything currently available.</p><button class="easy-mainbtn" onclick="easySourceForRecipe()">GET WHAT I NEED</button>${renderSourceGame(r)}</div><div class="cg3-card"><h2>🧊 Pantry & Fridge</h2><p>After producing ingredients, store them here and pull only what the recipe needs.</p>
  ${r?`<div class="cg3-next">Recipe: ${r[1]} • ${Object.entries(req).map(([k,v])=>ITEMS[k][0]+' ×'+v).join(' • ')}<button onclick="pullRecipeIngredients()">GET ALL NEEDED INGREDIENTS</button></div>`:''}
  ${document.getElementById('realStorageBrowser')?realStorageBrowser.innerHTML:''}
  ${document.getElementById('shoppingNeeds')?shoppingNeeds.innerHTML:''}
@@ -1449,7 +1534,7 @@ function cg3Academy(){
  cg3AcademyBody.innerHTML=`<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
  ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" style="min-height:54px;font-size:16px" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]} • ${masteryRank(s.recipeMastery[ix]||0)}</button>`).join('')}</div>`).join('')}</div>
  <div class="cg3-card"><h2>🔥 Divine Favor</h2>${Object.entries(s.godFavor).map(([k,v])=>`<p>${k} <b>${v}/100</b></p><div class="mastery-track"><i style="width:${Math.min(100,v)}%"></i></div>`).join('')}</div>
- <div class="cg3-card"><h2>🌾 Kitchen Sources</h2><p>Invest rewards into the things that produce your ingredients: chickens, gardens, livestock, orchards and grain plots.</p>${renderSourceGame(R())}</div><div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
+ <div class="cg3-card"><h2>🌾 Kitchen Sources</h2><p>Invest rewards into the things that produce your ingredients: chickens, gardens, livestock, orchards and grain plots.</p>${renderSourceGame(R())}</div>${renderSmartUnlocks()}<div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
  ${s.chests?`<div class="temple-chest"><h2>🎁 Temple Chest ×${s.chests}</h2><button class="cg3-start" onclick="openTempleChest()">OPEN REWARD CHEST</button></div>`:''}</div>`;
 }
 
@@ -1670,7 +1755,7 @@ function burnerTarget(level){
 function heatTick(){
  ensureHeatEngine();
  let burnerLevel=(s.burners&&s.burners[s.activeBurner])||0;
- let panTarget=burnerTarget(burnerLevel);
+ let panTarget=s.stoveTargetTemp||burnerTarget(burnerLevel);
  if(s.cookLocation==='stove'){
    s.panTemp += (panTarget-s.panTemp)*0.18;
    s.foodTemp += (s.panTemp-s.foodTemp)*0.08;
@@ -1713,10 +1798,10 @@ function moveFoodToOven(){
    let r=R();if(!r)return toast('Start a recipe first.');
    s.ovenItem={name:r[1],emoji:ovenDishEmoji(r)};
  }
- s.cookLocation='oven';save();render();toast('Food moved into the oven.');
+ s.cookLocation='oven';theaterEvent('🎬 Food enters the oven chamber','good');save();render();toast('Food moved into the oven.');
 }
 function moveFoodToStove(){
- ensureHeatEngine();s.cookLocation='stove';save();render();toast('Food moved to the stovetop.');
+ ensureHeatEngine();s.cookLocation='stove';theaterEvent('🎬 Food hits the stovetop','hot');save();render();toast('Food moved to the stovetop.');
 }
 function renderUnifiedHeat(){
  ensureHeatEngine();heatTick();
@@ -1896,7 +1981,232 @@ function applyOvenPhysics(){
  if(s.ovenMode==='BROIL'&&s.ovenRack==='top')s.ovenCrust=Math.min(100,s.ovenCrust+1.8);
 }
 
+
+function ensureTheater(){
+ if(!s.theaterLog)s.theaterLog=[];
+ if(s.theaterHeat==null)s.theaterHeat=0;
+ if(s.cascadeLevel==null)s.cascadeLevel=0;
+ if(s.stoveTargetTemp==null)s.stoveTargetTemp=325;
+ if(s.stoveZone==null)s.stoveZone='MEDIUM';
+ if(s.ovenTargetExpanded==null)s.ovenTargetExpanded=s.ovenSet||350;
+}
+ensureTheater();
+
+function stoveZoneFromTemp(t){
+ if(t<180)return'WARM';
+ if(t<275)return'LOW';
+ if(t<375)return'MEDIUM';
+ if(t<475)return'HIGH';
+ return'SEAR';
+}
+function setStoveTempExact(t){
+ ensureHeatEngine();ensureTheater();
+ s.stoveTargetTemp=Math.max(100,Math.min(650,t));
+ s.stoveZone=stoveZoneFromTemp(s.stoveTargetTemp);
+ let map=s.stoveTargetTemp<220?1:s.stoveTargetTemp<380?2:3;
+ if(s.burners)s.burners[s.activeBurner]=map;
+ s.cookLocation='stove';
+ rewardAction('stove_temp_'+t,'Stove temperature set',3,1,'Ignis',1);
+ theaterEvent('🔥 Stove set to '+t+'°F ('+s.stoveZone+')','hot');
+ easyFX('🔥');save();render();
+}
+function nudgeStoveTemp(d){setStoveTempExact((s.stoveTargetTemp||325)+d)}
+function nudgeOvenTemp(d){
+ ensureOven2();ensureTheater();
+ s.ovenSet=Math.max(100,Math.min(600,(s.ovenSet||350)+d));
+ theaterEvent('♨️ Oven target '+s.ovenSet+'°F',d>0?'hot':'warn');
+ easyFX('♨️');save();render();
+}
+function theaterEvent(msg,type='good'){
+ ensureTheater();
+ s.theaterLog.unshift({msg,type,t:Date.now()});
+ s.theaterLog=s.theaterLog.slice(0,6);
+ s.theaterHeat=Math.min(100,s.theaterHeat+(type==='hot'?10:type==='warn'?5:3));
+}
+function cascadeFromHeat(){
+ ensureTheater();ensureHeatEngine();
+ let effects=[];
+ let source=s.cookLocation==='oven'?s.oven:s.panTemp;
+ if(source>500){effects.push('Rapid browning');s.cascadeLevel+=2}
+ else if(source>400){effects.push('Fast crust formation');s.cascadeLevel+=1}
+ if((s.food.moisture||100)<35){effects.push('Dryness risk');s.cascadeLevel+=1}
+ if((s.food.browning||0)>85){effects.push('Burn warning');s.cascadeLevel+=2}
+ if((s.food.doneness||0)>92){effects.push('Ready to remove');}
+ if(s.ovenDoor&&s.cookLocation==='oven'){effects.push('Heat loss');}
+ if(s.cascadeLevel>=5&&Math.random()<.08){
+   theaterEvent('⚠️ Cascade Event: smoke alarm flare-up!','warn');
+   s.pressure=Math.min(100,(s.pressure||0)+8);
+   s.cascadeLevel=0;
+ }
+ return effects;
+}
+function renderTempTheater(){
+ ensureTheater();ensureHeatEngine();
+ let cur=s.cookLocation==='oven'?(s.oven||72):(s.panTemp||72);
+ let target=s.cookLocation==='oven'?(s.ovenSet||350):(s.stoveTargetTemp||325);
+ let pct=Math.max(0,Math.min(100,(cur-100)/5.5));
+ let effects=cascadeFromHeat();
+ return `<div class="theater-panel"><div class="theater-title">🎭 KITCHEN THEATER</div><div class="theater-sub">Heat decisions create visible consequences and cascading events.</div>
+ <div class="temp-scale"><i class="temp-marker" style="left:${pct}%"></i></div>
+ <div class="heat-readouts"><div><b>${Math.round(cur)}°F</b>CURRENT</div><div><b>${Math.round(target)}°F</b>TARGET</div><div><b>${s.cookLocation==='oven'?'OVEN':'STOVE'}</b>ACTIVE</div><div><b>${Math.round(s.theaterHeat)}</b>DRAMA</div></div>
+ <div class="temp-controls">
+   <button class="cool" onclick="s.cookLocation==='oven'?nudgeOvenTemp(-50):nudgeStoveTemp(-50)">−50°</button>
+   <button class="cool" onclick="s.cookLocation==='oven'?nudgeOvenTemp(-25):nudgeStoveTemp(-25)">−25°</button>
+   <button class="hot" onclick="s.cookLocation==='oven'?nudgeOvenTemp(25):nudgeStoveTemp(25)">+25°</button>
+   <button class="hot" onclick="s.cookLocation==='oven'?nudgeOvenTemp(50):nudgeStoveTemp(50)">+50°</button>
+ </div>
+ <div class="cascade-chain">
+   <div class="cascade-node"><b>HEAT</b><br>${Math.round(cur)}°F</div><div class="cascade-arrow">›</div>
+   <div class="cascade-node"><b>FOOD TEMP</b><br>${Math.round(s.foodTemp||72)}°F</div><div class="cascade-arrow">›</div>
+   <div class="cascade-node"><b>BROWNING</b><br>${Math.round(s.food.browning||0)}%</div><div class="cascade-arrow">›</div>
+   <div class="cascade-node"><b>MOISTURE</b><br>${Math.round(s.food.moisture||0)}%</div><div class="cascade-arrow">›</div>
+   <div class="cascade-node"><b>RESULT</b><br>${effects.join(', ')||'Stable'}</div>
+ </div>
+ <div class="stage-lights">${[20,40,60,80,100].map(x=>`<i class="${s.theaterHeat>=x?'on':''}"></i>`).join('')}</div>
+ <div class="theater-feed">${s.theaterLog.map(e=>`<div class="theater-event ${e.type}">${e.msg}</div>`).join('')}</div>
+ </div>`;
+}
+
+
+const KOS_APPLIANCES=['fridge','prep','mixer','stove','oven','plate','sink'];
+function ensureKitchenOS(){
+ if(!s.kos)s.kos={log:[],unlocks:{autoPreheat:false,smartBurner:false,tempProbe:false,smartFridge:false,autoHold:false,dishNetwork:false,divineAI:false},godTakeover:null};
+ if(!s.applianceDirty)s.applianceDirty={mixer:false,pan:false,knife:false,board:false};
+ if(!s.applianceState)s.applianceState={};
+}
+ensureKitchenOS();
+
+function kosLog(msg,type='info'){
+ ensureKitchenOS();
+ s.kos.log.unshift({msg,type,t:Date.now()});
+ s.kos.log=s.kos.log.slice(0,7);
+}
+function kosApplianceStatus(id){
+ ensureKitchenOS();let r=R();
+ if(id==='fridge'){
+   let miss=r?Object.entries(r[5]).filter(([k,n])=>storageQty(k)+workingQty(k)<n).length:0;
+   return {state:miss?'WARN':'ONLINE',detail:miss?miss+' ingredient(s) missing':'Recipe stock ready',cls:miss?'warn':'online'};
+ }
+ if(id==='prep'){
+   let ready=r?Object.keys(r[5]).every(k=>s.stockState?.[k]?.prepped||workingQty(k)>0):false;
+   return {state:ready?'READY':'WAIT',detail:ready?'Ingredients staged':'Waiting on ingredients',cls:ready?'online':'wait'};
+ }
+ if(id==='mixer'){
+   let g=s.stationGames||{};return {state:g.mixerSpeed>0?'RUNNING':'STANDBY',detail:'Texture '+Math.round(g.texture||0)+'%',cls:g.mixerSpeed>0?'online':'wait'};
+ }
+ if(id==='stove'){
+   return {state:s.cookLocation==='stove'?'ACTIVE':'STANDBY',detail:'Pan '+Math.round(s.panTemp||72)+'°F • Food '+Math.round(s.foodTemp||72)+'°F',cls:s.cookLocation==='stove'?'hot':'wait'};
+ }
+ if(id==='oven'){
+   return {state:s.ovenPower?'ACTIVE':'STANDBY',detail:'Chamber '+Math.round(s.oven||72)+'°F / '+Math.round(s.ovenSet||350)+'°F',cls:s.ovenPower?'hot':'wait'};
+ }
+ if(id==='plate'){
+   return {state:(s.food?.doneness||0)>=80?'READY':'WAIT',detail:'Presentation '+Math.round(s.food?.plating||0)+'%',cls:(s.food?.doneness||0)>=80?'online':'wait'};
+ }
+ if(id==='sink'){
+   let dirty=Object.values(s.applianceDirty||{}).filter(Boolean).length;
+   return {state:dirty?'DIRTY':'CLEAN',detail:dirty?dirty+' item(s) need washing':'Sanitation ready',cls:dirty?'warn':'online'};
+ }
+ return {state:'ONLINE',detail:'Connected',cls:'online'};
+}
+function kosNext(){
+ let r=R();if(!r)return 'Choose a recipe.';
+ let p=cg3Phase()[0];
+ if(p==='GET')return 'Collect or produce the missing ingredients.';
+ if(p==='PREP')return 'Prep the ingredients at the counter.';
+ if(p==='MIX')return s.applianceDirty?.mixer?'Wash the mixer bowl first.':'Mix the recipe.';
+ if(p==='COOK'){
+   if(cg3StationForCurrent()==='oven'){
+     if(!s.ovenPower)return 'Turn the oven on.';
+     if(Math.abs((s.oven||72)-(s.ovenSet||350))>20)return 'Let the oven reach target temperature.';
+     if(!s.ovenItem)return 'Load the food into the oven.';
+     if((s.food?.doneness||0)>=92)return 'Remove the food from the oven.';
+     return 'Keep cooking and watch temperature.';
+   } else {
+     if((s.panTemp||72)<180)return 'Heat the pan.';
+     if((s.food?.doneness||0)>=92)return 'Take the food off the stove.';
+     return 'Keep cooking on the active burner.';
+   }
+ }
+ if(p==='PLATE')return 'Plate the finished dish.';
+ return Object.values(s.applianceDirty||{}).some(Boolean)?'Wash the dirty equipment.':'Finish cleanup and complete the lesson.';
+}
+function jumpAppliance(id){
+ if(id==='fridge'){s.cg3Screen='pantry';save();render();return}
+ s.cg3Screen='cook';
+ s.cg3Station=id==='plate'?'plate':id;
+ if(id==='oven')s.cookLocation='oven';
+ if(id==='stove')s.cookLocation='stove';
+ save();render();setTimeout(()=>cg3Help(),80);
+}
+function renderKitchenOS(){
+ ensureKitchenOS();
+ return `<div class="kos"><div class="kos-head"><div><div class="kos-title">🧠 DIVINE KITCHEN OS</div><div class="kos-status">${KOS_APPLIANCES.length}/7 appliances linked • ${s.kos.godTakeover?'GOD LINK ACTIVE':'network stable'}</div></div><span class="smart-chip">SMART KITCHEN</span></div>
+ <div class="kos-grid">${KOS_APPLIANCES.map(id=>{let a=kosApplianceStatus(id);return `<div class="kos-tile ${a.cls}" onclick="jumpAppliance('${id}')"><b>${id.toUpperCase()} • ${a.state}</b><small>${a.detail}</small></div>`}).join('')}</div>
+ <div class="kos-next">🟡 NEXT: ${kosNext()}</div>
+ ${s.kos.godTakeover?`<div class="god-voice">🔥 ${s.kos.godTakeover} is linked to the kitchen network.</div>`:''}
+ <div class="kos-log">${s.kos.log.map(x=>`<div class="kos-msg">${x.msg}</div>`).join('')}</div></div>`;
+}
+function applianceReadout(id){
+ let a=kosApplianceStatus(id);
+ if(id==='oven')return `<div class="appliance-readout"><div class="row"><span>CHAMBER</span><strong>${Math.round(s.oven||72)}°F</strong></div><div class="row"><span>TARGET</span><strong>${Math.round(s.ovenSet||350)}°F</strong></div><div class="row"><span>FOOD</span><strong>${Math.round(s.foodTemp||72)}°F</strong></div><div class="row"><span>RACK</span><strong>${(s.ovenRack||'mid').toUpperCase()}</strong></div><div class="row"><span>NEXT</span><strong>${kosNext()}</strong></div></div>`;
+ if(id==='stove')return `<div class="appliance-readout"><div class="row"><span>PAN</span><strong>${Math.round(s.panTemp||72)}°F</strong></div><div class="row"><span>FOOD</span><strong>${Math.round(s.foodTemp||72)}°F</strong></div><div class="row"><span>ZONE</span><strong>${s.stoveZone||'MEDIUM'}</strong></div><div class="row"><span>BROWNING</span><strong>${Math.round(s.food?.browning||0)}%</strong></div><div class="row"><span>NEXT</span><strong>${kosNext()}</strong></div></div>`;
+ if(id==='fridge')return `<div class="appliance-readout"><div class="row"><span>STATUS</span><strong>${a.state}</strong></div><div class="row"><span>STOCK</span><strong>${Object.values(s.inventory||{}).reduce((x,y)=>x+y,0)}</strong></div><div class="row"><span>NEXT</span><strong>${kosNext()}</strong></div></div>`;
+ if(id==='mixer')return `<div class="appliance-readout"><div class="row"><span>SPEED</span><strong>${['OFF','LOW','MED','HIGH'][s.stationGames?.mixerSpeed||0]}</strong></div><div class="row"><span>TEXTURE</span><strong>${Math.round(s.stationGames?.texture||0)}%</strong></div><div class="row"><span>DIRTY</span><strong>${s.applianceDirty?.mixer?'YES':'NO'}</strong></div></div>`;
+ if(id==='sink')return `<div class="appliance-readout"><div class="row"><span>CLEANLINESS</span><strong>${Math.round(s.cleanliness||0)}%</strong></div><div class="row"><span>DIRTY ITEMS</span><strong>${Object.values(s.applianceDirty||{}).filter(Boolean).length}</strong></div><div class="row"><span>NEXT</span><strong>${kosNext()}</strong></div></div>`;
+ return `<div class="appliance-readout"><div class="row"><span>STATUS</span><strong>${a.state}</strong></div><div class="row"><span>DETAIL</span><strong>${a.detail}</strong></div></div>`;
+}
+function kitchenOSCrossTalk(){
+ ensureKitchenOS();let r=R();if(!r)return;
+
+ // Fridge -> prep / oven auto-preheat
+ let staged=Object.keys(r[5]).every(k=>workingQty(k)>=r[5][k]||s.stockState?.[k]?.prepped);
+ if(staged && s.kos.unlocks.autoPreheat && cg3StationForCurrent()==='oven' && !s.ovenPower){
+   s.ovenPower=true;s.ovenSet=ovenProfile().ideal;kosLog('♨️ Oven auto-preheat started from prep completion.','info');
+ }
+
+ // Smart burner warning
+ if(s.kos.unlocks.smartBurner && s.cookLocation==='stove' && (s.panTemp||72)>475 && (s.food?.browning||0)>70){
+   kosLog('🔥 Smart Burner: reduce heat now.','warn');
+ }
+
+ // Temp probe
+ if(s.kos.unlocks.tempProbe && (s.foodTemp||72)>=165 && (s.food?.doneness||0)<90){
+   s.food.doneness=Math.max(s.food.doneness||0,90);
+   kosLog('🌡️ Probe target reached: food is safe and nearly done.','info');
+ }
+
+ // Auto hold
+ if(s.kos.unlocks.autoHold && s.cookLocation==='oven' && (s.food?.doneness||0)>=92 && s.ovenPower && s.ovenMode!=='KEEP WARM'){
+   s.ovenMode='KEEP WARM';s.ovenSet=180;kosLog('♨️ Auto Hold engaged at 180°F.','info');
+ }
+
+ // Dish network blocks mixer
+ if(s.kos.unlocks.dishNetwork && s.applianceDirty.mixer && cg3Phase()[0]==='MIX'){
+   kosLog('🚰 Dish Network: mixer blocked until bowl is washed.','warn');
+ }
+
+ // Random god takeover, low frequency
+ if(s.kos.unlocks.divineAI && !s.kos.godTakeover && Math.random()<0.01){
+   s.kos.godTakeover=recipeGod(r);
+   kosLog('✨ '+s.kos.godTakeover+' entered the appliance network.','info');
+ }
+}
+function unlockSmartKitchenFeature(id,cost){
+ ensureKitchenOS();
+ const names={autoPreheat:'AUTO PREHEAT',smartBurner:'SMART BURNER',tempProbe:'TEMP PROBE',smartFridge:'SMART FRIDGE',autoHold:'AUTO HOLD',dishNetwork:'DISH NETWORK',divineAI:'DIVINE KITCHEN AI'};
+ if(s.kos.unlocks[id])return;
+ if(s.techniquePoints<cost)return toast('Need '+cost+' Technique Points.');
+ s.techniquePoints-=cost;s.kos.unlocks[id]=true;rewardPopup('UNLOCKED • '+names[id]);kosLog('🧠 '+names[id]+' installed.');save();render();
+}
+function renderSmartUnlocks(){
+ ensureKitchenOS();
+ const fs=[['autoPreheat','AUTO PREHEAT',4,'Prep can start the oven automatically.'],['smartBurner','SMART BURNER',4,'Warns before stovetop overheating.'],['tempProbe','TEMP PROBE',5,'Tracks safe internal food temperature.'],['smartFridge','SMART FRIDGE',4,'Improves ingredient shortage awareness.'],['autoHold','AUTO HOLD',6,'Finished oven food drops to holding heat.'],['dishNetwork','DISH NETWORK',5,'Dirty equipment affects later stations.'],['divineAI','DIVINE KITCHEN AI',9,'Gods can temporarily take over the network.']];
+ return `<div class="cg3-card"><h2>🧠 Smart Kitchen Upgrades</h2><div class="shop-upgrades">${fs.map(([id,n,c,d])=>`<div class="upgrade-card ${s.kos.unlocks[id]?'owned':''}"><h3>${n}</h3><p>${d}</p><button class="btn" onclick="unlockSmartKitchenFeature('${id}',${c})">${s.kos.unlocks[id]?'INSTALLED':'INSTALL • '+c+' 📖'}</button></div>`).join('')}</div></div>`;
+}
+
 function renderCG3(){
+ kitchenOSCrossTalk();
  ensureCG3();
  ['home','cook','pantry','academy'].forEach(x=>{
    let sec=document.getElementById('cg3'+x[0].toUpperCase()+x.slice(1));if(sec)sec.classList.toggle('active',s.cg3Screen===x);
