@@ -493,6 +493,20 @@ linear-gradient(180deg,#131a22 0%,#0b0d10 50%,#08090b 100%)}
 .movie-readout div{background:#10151b;border:1px solid #3b4650;border-radius:10px;padding:8px;text-align:center;font-size:11px;color:#aeb9c4}.movie-readout b{display:block;color:#f6f8fa;font-size:16px}
 .movie-skip{margin-top:8px;width:100%;min-height:44px;background:#171b20;color:#bac4cc;border:1px solid #38414a;border-radius:10px;font-weight:800}
 @media(max-width:560px){.movie-screen{min-height:360px;padding:13px}.movie-caption h2{font-size:22px}.movie-action{font-size:19px}.movie-god{font-size:58px}}
+
+/* === CLICK • DO • REWARD RELEASE LOOP === */
+.reward-pop-fixed{position:fixed;left:50%;top:22%;transform:translateX(-50%) scale(.9);z-index:2147483000;
+background:linear-gradient(180deg,#20170b,#0c0d10);border:2px solid #f2c45d;color:#fff;border-radius:18px;
+padding:14px 18px;min-width:220px;max-width:82vw;text-align:center;box-shadow:0 18px 55px #000b;opacity:0;pointer-events:none}
+.reward-pop-fixed.show{animation:rewardPop .95s ease forwards}
+.reward-pop-fixed b{display:block;font-size:24px;color:#ffe28a;margin-bottom:4px}.reward-pop-fixed small{color:#d8d0bd}
+@keyframes rewardPop{0%{opacity:0;transform:translateX(-50%) scale(.75)}15%{opacity:1;transform:translateX(-50%) scale(1.05)}70%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(.98)}}
+.click-loop-card{background:linear-gradient(180deg,#151a20,#0b0e12);border:1px solid #59626b;border-radius:16px;padding:12px;margin:10px 0}
+.click-loop-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.click-loop-head b{font-size:17px}
+.click-loop-next{background:#ffdb18;color:#241900;border-radius:12px;padding:10px;font-weight:1000;margin:8px 0}
+.click-loop-btn{width:100%;min-height:58px;border:0;border-radius:14px;background:#ffdb18;color:#241900;font-size:18px;font-weight:1000;box-shadow:0 5px 0 #9d7600}
+.click-loop-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #9d7600}
+.reward-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.reward-strip div{background:#10151a;border:1px solid #343c44;border-radius:9px;padding:7px;text-align:center;font-size:10px}.reward-strip b{display:block;font-size:16px;color:#ffe28a}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -2541,4 +2555,92 @@ function render(){
  exams.innerHTML=EXAMS.map(e=>`<div class="card" style="margin-bottom:9px"><h3>🧾 ${e[1]}</h3><p>${e[2]}</p><p>${s.level>=e[0]?'Available now':'Unlock Level '+e[0]}</p></div>`).join('');coachForCurrent();renderBeginnerSchool();renderStationGames();renderPop();save()
 }
 render();
-</script><div class="chef-bubble" id="chefBubble"></div><div class="achievement-toast" id="achievementToast"></div></body></html>
+</script><div class="chef-bubble" id="chefBubble"></div><div class="achievement-toast" id="achievementToast"></div><script>
+/* === CLICK • DO • REWARD ENGINE === */
+window.CGReward=window.CGReward||{coins:0,xp:0,streak:0,actions:0,last:''};
+function cgRewardPopup(title,coins=3,xp=2){
+ let old=document.getElementById('cgRewardFixed');if(old)old.remove();
+ let p=document.createElement('div');p.id='cgRewardFixed';p.className='reward-pop-fixed';
+ p.innerHTML=`<b>✨ ${title}</b><small>+${coins} 🪙 • +${xp} XP • STREAK ×${CGReward.streak}</small>`;
+ document.body.appendChild(p);requestAnimationFrame(()=>p.classList.add('show'));setTimeout(()=>p.remove(),1100);
+ try{if(typeof beep==='function'){beep(720,.05);setTimeout(()=>beep(920,.07),65)}}catch(e){}
+}
+function cgGrantReward(label,coins=3,xp=2){
+ CGReward.actions++;CGReward.streak=Math.min(99,(CGReward.streak||0)+1);CGReward.last=label;
+ CGReward.coins=(CGReward.coins||0)+coins;CGReward.xp=(CGReward.xp||0)+xp;
+ try{
+   if(window.s){
+     if(Number.isFinite(Number(s.coins)))s.coins+=coins;
+     if(Number.isFinite(Number(s.xp)))s.xp=Math.min(100,(s.xp||0)+xp);
+     if(typeof save==='function')save();
+   }
+ }catch(e){}
+ cgRewardPopup(label,coins,xp);
+}
+function cgMissReward(){CGReward.streak=0}
+function cgAction(label,fn,coins=3,xp=2){
+ try{
+   let r=fn&&fn();
+   cgGrantReward(label,coins,xp);
+   return r;
+ }catch(e){
+   cgMissReward();console.error(e);
+   try{if(typeof toast==='function')toast('Action failed safely. Try again.')}catch(_){}
+ }
+}
+function cgSimpleLoopHTML(title,nextLabel,buttonLabel,onclick){
+ return `<div class="click-loop-card"><div class="click-loop-head"><b>🎮 ${title}</b><span>STREAK ×${CGReward.streak||0}</span></div>
+ <div class="click-loop-next">NEXT: ${nextLabel}</div>
+ <button class="click-loop-btn" onclick="${onclick}">${buttonLabel}</button>
+ <div class="reward-strip"><div><b>+3</b>COINS</div><div><b>+2</b>XP</div><div><b>${CGReward.actions||0}</b>ACTIONS</div><div><b>×${CGReward.streak||0}</b>STREAK</div></div></div>`;
+}
+
+/* Automatically reward meaningful kitchen buttons without changing their original behavior. */
+function cgWireRewardButtons(root=document){
+ const sels=['button'];
+ root.querySelectorAll(sels.join(',')).forEach(btn=>{
+   if(btn.dataset.cgRewardWired)return;
+   let txt=(btn.textContent||'').trim();
+   if(!txt || /home|menu|back|close|help|settings|options|resume|new game/i.test(txt))return;
+   btn.dataset.cgRewardWired='1';
+   btn.addEventListener('click',()=>{
+     setTimeout(()=>{
+       if(btn.disabled)return;
+       let label=txt.replace(/\s+/g,' ').slice(0,42);
+       cgGrantReward(label, /finish|serve|complete|perfect|boss/i.test(label)?8:3, /finish|serve|complete|perfect|boss/i.test(label)?5:2);
+     },0);
+   },{passive:true});
+ });
+}
+const cgRewardObserver=new MutationObserver(()=>cgWireRewardButtons(document));
+window.addEventListener('DOMContentLoaded',()=>{
+ cgWireRewardButtons(document);
+ cgRewardObserver.observe(document.body,{childList:true,subtree:true});
+});
+setTimeout(()=>cgWireRewardButtons(document),250);
+
+/* Oven-focused click-reward helpers */
+function cgOvenQuick(action){
+ if(!window.s)return;
+ if(action==='preheat'){s.ovenPower=true;s.ovenSet=Math.max(350,s.ovenSet||350);cgGrantReward('Oven Preheated',4,3)}
+ if(action==='load'){s.ovenItem=s.ovenItem||{name:'Current Dish'};cgGrantReward('Dish Loaded',4,3)}
+ if(action==='cook'){s.ovenCook=Math.min(100,(s.ovenCook||0)+25);if(s.food&&typeof s.food==='object')s.food.doneness=Math.min(100,(s.food.doneness||0)+20);cgGrantReward('Oven Cooking',5,3)}
+ if(action==='finish'){s.ovenCook=100;if(s.food&&typeof s.food==='object')s.food.doneness=96;s.ovenPower=false;cgGrantReward('Perfect Oven Finish',10,6)}
+ try{if(typeof save==='function')save();if(typeof render==='function')render()}catch(e){}
+}
+function cgOvenRewardPanel(){
+ if(!window.s)return'';
+ let cook=Math.round(s.ovenCook||0),power=!!s.ovenPower,item=!!s.ovenItem;
+ let next=!power?['PREHEAT OVEN',"cgOvenQuick('preheat')"]:!item?['LOAD DISH',"cgOvenQuick('load')"]:cook<100?['COOK +25%',"cgOvenQuick('cook')"]:['FINISH & REWARD',"cgOvenQuick('finish')"];
+ return cgSimpleLoopHTML('FORNAX OVEN','Press one button, get the reward',next[0],next[1]);
+}
+</script><script>
+setTimeout(()=>{
+ try{
+   let target=document.querySelector('#ovenStage,.oven-stage,[data-station="oven"],#ovenPanel');
+   if(target && !document.getElementById('cgOvenLoopHost')){
+      let h=document.createElement('div');h.id='cgOvenLoopHost';h.innerHTML=cgOvenRewardPanel();target.prepend(h);
+   }
+ }catch(e){}
+},400);
+</script></body></html>
