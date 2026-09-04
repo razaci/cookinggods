@@ -2493,6 +2493,9 @@ function ensureChapterMovie(){
 ensureChapterMovie();
 
 function ch1MovieAction(){
+ if(window.__ch1MovieBusy)return;
+ window.__ch1MovieBusy=true;
+ setTimeout(()=>window.__ch1MovieBusy=false,180);
  ensureChapterMovie();starterEssentials();
  let scene=CH1_MOVIE[s.ch1MovieStep]||CH1_MOVIE[0];
  let a=scene.act;
@@ -2551,8 +2554,19 @@ function ch1MovieAction(){
  save();render();
 }
 function resetChapterMovie(){s.ch1MovieStep=0;s.ch1MovieDone=false;save();render()}
+function exitChapterMovie(){
+ ensureChapterMovie();
+ s.ch1MovieDone=true;
+ s.ch1MovieStep=0;
+ s.cg3Screen='home';
+ cg3ClearTarget();
+ save();
+ render();
+ toast('Movie closed. You can replay it from Academy.');
+}
 function renderChapterMovie(){
  ensureChapterMovie();
+ setTimeout(()=>document.querySelectorAll('.movie-chapter button').forEach(b=>b.classList.remove('easy-hide')),0);
  let i=Math.max(0,Math.min(CH1_MOVIE.length-1,s.ch1MovieStep)),x=CH1_MOVIE[i];
  let pan=Math.round(s.panTemp||72),food=Math.round(s.foodTemp||72),done=Math.round(s.food?.doneness||0);
  return `<div class="movie-chapter">
@@ -2563,6 +2577,7 @@ function renderChapterMovie(){
    <div class="movie-readout"><div><b>${pan}°F</b>PAN</div><div><b>${food}°F</b>FOOD</div><div><b>${done}%</b>DONE</div></div>
    <button class="movie-action" onclick="ch1MovieAction()">${x.button} ▶</button>
    ${i>0?'<button class="movie-skip" onclick="resetChapterMovie()">RESTART CHAPTER I</button>':''}
+   <button class="movie-skip" onclick="exitChapterMovie()">EXIT MOVIE • GO TO HOME</button>
   </div>
  </div>
  <div class="movie-progress">${CH1_MOVIE.map((_,n)=>`<i class="${n<i?'done':''}"></i>`).join('')}</div>
@@ -2754,11 +2769,13 @@ function renderCG3(){
  cg3Home();cg3Cook();cg3Pantry();cg3Academy();
  setTimeout(()=>{
    if(!window.__cg3RenderingPointer){window.__cg3RenderingPointer=true;cg3PointToNext(false);setTimeout(()=>window.__cg3RenderingPointer=false,120);}
-   if(s.beginnerMode&&s.cg3Screen==='cook'){
+   if(s.beginnerMode&&s.cg3Screen==='cook'&&!chapterOneMovieActive()){
      document.querySelectorAll('#cg3CookBody .cg3-card').forEach((el,i)=>{if(i>0)el.classList.add('easy-hide')});
      document.querySelectorAll('#cg3CookBody button').forEach(btn=>{
-       if(!btn.classList.contains('easy-mainbtn')&&!btn.classList.contains('easy-second')&&!btn.closest('.easy-focus')) btn.classList.add('easy-hide');
+       if(!btn.classList.contains('easy-mainbtn')&&!btn.classList.contains('easy-second')&&!btn.closest('.easy-focus')&&!btn.closest('.movie-chapter')) btn.classList.add('easy-hide');
      });
+   }else if(chapterOneMovieActive()){
+     document.querySelectorAll('#cg3CookBody .movie-chapter button').forEach(btn=>btn.classList.remove('easy-hide'));
    }
  },60);
 }
