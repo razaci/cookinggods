@@ -466,6 +466,14 @@ linear-gradient(180deg,#17100b,#070707);border:1px solid #7c532b;border-radius:2
 .smart-chip{display:inline-block;border-radius:999px;background:#193349;color:#bcecff;padding:3px 7px;font-size:10px;font-weight:1000}
 .god-voice{background:linear-gradient(90deg,#2c1407,#53240a);border:1px solid #a95a22;border-radius:10px;padding:8px;color:#ffd7a5;margin-top:7px}
 @media(max-width:700px){.kos-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* === ANTI-SOFTLOCK ECONOMY === */
+.softlock-panel{background:linear-gradient(180deg,#1b1d14,#0c0e09);border:2px solid #8fa94e;border-radius:16px;padding:12px;margin:10px 0}
+.softlock-panel h3{margin:0 0 6px;color:#e8f6a7}.softlock-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.softlock-actions button{min-height:50px;border-radius:11px;border:1px solid #6d8251;background:#1a2816;color:#f0f7e9;font-weight:900}
+.refund-btn{background:#342018!important;border-color:#8c5a3b!important}
+.safe-badge{display:inline-block;background:#dff0a2;color:#233017;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:1000}
+@media(max-width:620px){.softlock-actions{grid-template-columns:1fr}}
 </style></head><body>
 <div id="cg3" class="cg3-shell">
   <div class="cg3-nav">
@@ -1440,11 +1448,11 @@ ensureCG3();
 function cg3Go(x){s.cg3Screen=x;save();renderCG3()}
 function cg3Recipe(){return R()}
 function cg3Phase(){return CG3_PHASES[s.cg3Phase]||CG3_PHASES[0]}
-function cg3StartLesson(){
+function cg3StartLesson(){starterEssentials();
  if(!R()||RECIPES[s.recipe][2]>1){s.recipe=0;s.step=0}
  s.cg3LessonStarted=true;s.cg3Phase=0;s.cg3Screen='cook';s.cg3Station='auto';save();render();
 }
-function cg3SelectRecipe(i){
+function cg3SelectRecipe(i){ensureAntiSoftlock();if(RECIPES[i]&&RECIPES[i][2]<=1&&s.coins<120)s.coins=120;
  if(RECIPES[i][2]>s.level)return toast('Reach level '+RECIPES[i][2]+' first.');
  s.recipe=i;s.step=0;s.cg3LessonStarted=true;s.cg3Phase=0;s.cg3Screen='cook';save();render();
 }
@@ -1531,7 +1539,7 @@ function cg3Pantry(){
  <button class="cg3-start" onclick="cg3Go('cook')">RETURN TO COOKING</button></div>`;
 }
 function cg3Academy(){
- cg3AcademyBody.innerHTML=`<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
+ cg3AcademyBody.innerHTML=`${renderAntiSoftlock()}<div class="cg3-card"><h2>📘 Cooking Gods Academy</h2><p>Complex systems unlock gradually as your level rises.</p><div class="cg3-chapters">
  ${CG3_CAMPAIGN.map((c,i)=>`<div class="cg3-chapter ${s.level>=c.min?'active':'cg3-lock'}"><h3>${c.name}</h3><p><b>${c.god}</b> • ${c.desc}</p>${c.recipes.map(ix=>`<button class="btn" style="min-height:54px;font-size:16px" ${s.level<RECIPES[ix][2]?'disabled':''} onclick="cg3SelectRecipe(${ix})">${s.cg3Completed[ix]?'✓ ':''}${RECIPES[ix][1]} • ${masteryRank(s.recipeMastery[ix]||0)}</button>`).join('')}</div>`).join('')}</div>
  <div class="cg3-card"><h2>🔥 Divine Favor</h2>${Object.entries(s.godFavor).map(([k,v])=>`<p>${k} <b>${v}/100</b></p><div class="mastery-track"><i style="width:${Math.min(100,v)}%"></i></div>`).join('')}</div>
  <div class="cg3-card"><h2>🌾 Kitchen Sources</h2><p>Invest rewards into the things that produce your ingredients: chickens, gardens, livestock, orchards and grain plots.</p>${renderSourceGame(R())}</div>${renderSmartUnlocks()}<div class="cg3-card"><h2>🛠️ Kitchen Upgrades</h2><div class="shop-upgrades">${CG3_UPGRADES.map(u=>`<div class="upgrade-card ${s.upgrades[u.id]?'owned':''}"><h3>${u.icon} ${u.name}</h3><p>${u.desc}</p><button class="btn" onclick="buyUpgrade('${u.id}')">${s.upgrades[u.id]?'OWNED':'BUY • '+u.cost+' 🪙'}</button></div>`).join('')}</div></div>
@@ -1625,7 +1633,7 @@ function masteryRank(v){return v>=500?'DIVINE':v>=300?'MASTERED':v>=150?'SKILLED
 function buyUpgrade(id){
  ensureRewards();let u=CG3_UPGRADES.find(x=>x.id===id);if(!u||s.upgrades[id])return;
  if(s.coins<u.cost)return toast('You need '+u.cost+' coins.');
- s.coins-=u.cost;s.upgrades[id]=true;rewardPopup('UNLOCKED • '+u.name);save();render();
+ s.coins-=u.cost;recordPurchase('upgrade',id,u.cost);s.upgrades[id]=true;rewardPopup('UNLOCKED • '+u.name);save();render();
 }
 function openTempleChest(){
  ensureRewards();if(s.chests<=0)return;
@@ -1705,8 +1713,13 @@ function sourceLabel(k){
 }
 function buySource(id){
  ensureSources();let o=SOURCES[id];if(!o||s.sources[id])return;
+ let r=R();
+ if(r){
+   let needed=Object.keys(r[5]).some(k=>ingredientSource(k)===id);
+   if(!needed && s.level<=2)return toast('Beginner safeguard: this source is not needed for your current recipe.');
+ }
  if(s.coins<o.cost)return toast('You need '+o.cost+' coins.');
- s.coins-=o.cost;s.sources[id]=1;s.sourceReady[id]=true;rewardPopup('UNLOCKED • '+o.icon+' '+o.name);save();render();
+ s.coins-=o.cost;recordPurchase('source',id,o.cost);s.sources[id]=1;s.sourceReady[id]=true;rewardPopup('UNLOCKED • '+o.icon+' '+o.name);save();render();
 }
 function harvestSource(id){
  ensureSources();let o=SOURCES[id];if(!o||!s.sources[id])return toast('Unlock this source first.');
@@ -2205,8 +2218,130 @@ function renderSmartUnlocks(){
  return `<div class="cg3-card"><h2>🧠 Smart Kitchen Upgrades</h2><div class="shop-upgrades">${fs.map(([id,n,c,d])=>`<div class="upgrade-card ${s.kos.unlocks[id]?'owned':''}"><h3>${n}</h3><p>${d}</p><button class="btn" onclick="unlockSmartKitchenFeature('${id}',${c})">${s.kos.unlocks[id]?'INSTALLED':'INSTALL • '+c+' 📖'}</button></div>`).join('')}</div></div>`;
 }
 
+
+function ensureAntiSoftlock(){
+ if(s.emergencyGrants==null)s.emergencyGrants=0;
+ if(!s.purchaseHistory)s.purchaseHistory=[];
+ if(!s.recipeUnlockAid)s.recipeUnlockAid={};
+}
+ensureAntiSoftlock();
+
+function recordPurchase(type,id,cost){
+ ensureAntiSoftlock();
+ s.purchaseHistory.push({type,id,cost,t:Date.now(),refunded:false});
+ if(s.purchaseHistory.length>30)s.purchaseHistory=s.purchaseHistory.slice(-30);
+}
+function starterEssentials(){
+ ensureSources();
+ // Never let the player lose access to the first recipe's basic supply chain.
+ if(!s.sources.chicken)s.sources.chicken=1;
+ if(!s.sources.garden)s.sources.garden=1;
+ if((s.inventory.salt||0)<2)s.inventory.salt=2;
+ if((s.inventory.flour||0)<2)s.inventory.flour=2;
+ if((s.inventory.yeast||0)<1)s.inventory.yeast=1;
+}
+starterEssentials();
+
+function recipeMissingCost(r){
+ if(!r)return 0;
+ let cost=0;
+ Object.entries(r[5]).forEach(([k,n])=>{
+   let have=storageQty(k)+workingQty(k);
+   let miss=Math.max(0,n-have);
+   if(!miss)return;
+   let src=ingredientSource(k);
+   if(src==='craft'){
+     Object.entries(CRAFTS[k].from).forEach(([ik,inn])=>{
+       let ih=storageQty(ik)+workingQty(ik);
+       let im=Math.max(0,inn-ih);
+       if(im){
+         let isrc=ingredientSource(ik);
+         if(isrc!=='market' && isrc!=='craft' && !s.sources[isrc])cost+=SOURCES[isrc].cost;
+       }
+     });
+   }else if(src!=='market' && !s.sources[src]) cost+=SOURCES[src].cost;
+ });
+ return cost;
+}
+function canCompleteRecipe(r){
+ if(!r)return true;
+ let missingUnlocks=[];
+ Object.entries(r[5]).forEach(([k,n])=>{
+   if(storageQty(k)+workingQty(k)>=n)return;
+   let src=ingredientSource(k);
+   if(src!=='market'&&src!=='craft'&&!s.sources[src])missingUnlocks.push(src);
+ });
+ let needCost=[...new Set(missingUnlocks)].reduce((a,id)=>a+SOURCES[id].cost,0);
+ return s.coins>=needCost || needCost===0;
+}
+function emergencyKitchenGrant(){
+ ensureAntiSoftlock();let r=R();if(!r)return toast('Choose a recipe first.');
+ let need=recipeMissingCost(r);
+ let grant=Math.max(0,need-s.coins);
+ if(grant<=0)return toast('You already have enough coins or sources for this recipe.');
+ let capped=Math.min(grant,300);
+ s.coins+=capped;s.emergencyGrants++;
+ kosLog('🛟 Kitchen Aid granted '+capped+' coins to prevent a dead end.');
+ rewardPopup('🛟 +' + capped + ' RECOVERY COINS');
+ save();render();
+}
+function refundLastPurchase(){
+ ensureAntiSoftlock();
+ for(let i=s.purchaseHistory.length-1;i>=0;i--){
+   let x=s.purchaseHistory[i];
+   if(x.refunded)continue;
+   let refund=Math.max(1,Math.round(x.cost*.9));
+   if(x.type==='source' && s.sources[x.id]){
+     // Do not allow refunding starter-critical sources.
+     if(x.id==='chicken'||x.id==='garden')continue;
+     delete s.sources[x.id];s.sourceReady[x.id]=false;
+   }else if(x.type==='upgrade' && s.upgrades[x.id]){
+     delete s.upgrades[x.id];
+   }else continue;
+   x.refunded=true;s.coins+=refund;
+   kosLog('↩️ Refunded '+refund+' coins from '+x.id+'.');
+   rewardPopup('↩️ REFUND +' + refund + ' 🪙');
+   save();render();return;
+ }
+ toast('No refundable purchase available.');
+}
+function sellExtraIngredient(k){
+ let q=storageQty(k);
+ if(q<=0)return toast('None to sell.');
+ let keep=(R()&&R()[5][k])?R()[5][k]:0;
+ if(q<=keep)return toast('Keep this for the current recipe.');
+ s.inventory[k]=q-1;s.coins+=3;
+ rewardPopup('SOLD '+ITEMS[k][0]+' +3 🪙');save();render();
+}
+function smartBuyNeededSource(){
+ let r=R();if(!r)return toast('Choose a recipe first.');
+ for(const [k,n] of Object.entries(r[5])){
+   if(storageQty(k)+workingQty(k)>=n)continue;
+   let src=ingredientSource(k);
+   if(src!=='market'&&src!=='craft'&&!s.sources[src]){
+     let o=SOURCES[src];
+     if(s.coins<o.cost){
+       emergencyKitchenGrant();
+       if(s.coins<o.cost)return;
+     }
+     buySource(src);return;
+   }
+ }
+ easySourceForRecipe();
+}
+function renderAntiSoftlock(){
+ let r=R(),ok=canCompleteRecipe(r),need=recipeMissingCost(r);
+ return `<div class="softlock-panel"><span class="safe-badge">NO-DEAD-END MODE</span><h3>🛟 Kitchen Recovery</h3>
+ <p>${ok?'This recipe is currently completable.':'You are missing a required source and do not have enough coins yet.'}</p>
+ <div class="softlock-actions">
+   <button onclick="smartBuyNeededSource()">BUY ONLY WHAT THIS RECIPE NEEDS</button>
+   <button onclick="emergencyKitchenGrant()">RECOVERY COINS ${need>s.coins?'• NEED '+(need-s.coins):''}</button>
+   <button class="refund-btn" onclick="refundLastPurchase()">REFUND LAST PURCHASE</button>
+ </div></div>`;
+}
+
 function renderCG3(){
- kitchenOSCrossTalk();
+ starterEssentials();kitchenOSCrossTalk();
  ensureCG3();
  ['home','cook','pantry','academy'].forEach(x=>{
    let sec=document.getElementById('cg3'+x[0].toUpperCase()+x.slice(1));if(sec)sec.classList.toggle('active',s.cg3Screen===x);
